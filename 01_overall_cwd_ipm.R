@@ -11,7 +11,7 @@
 
 rm(list = ls())
 
-setwd("~/Documents/cwd_ipm")
+setwd("~/Documents/ipm/cwd_ipm_weekly")
 
 library(viridis)
 library(RColorBrewer)
