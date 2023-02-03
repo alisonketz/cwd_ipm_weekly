@@ -161,92 +161,40 @@ modelcode <- nimbleCode({
   #                 )
   # }
 
-#   y_hunt_pos[1:nInfHarvest] ~ dInfHarvest(n_samples = nInfHarvest,
-# 				          a = hunt_pos_ageweeks[1:nInfHarvest], #age (weeks) at harvest
-#                   sex = hunt_pos_sex[1:nInfHarvest],
-#                   age2date = hunt_pos_age2date[1:nInfHarvest],
-#                   beta_sex = beta_sex,
-#                   beta0_sus = beta0_sus,
-#                   beta0_inf = beta0_inf,
-#                   age_effect_surv = age_effect_survival[1:nT_age_surv],
-#                   period_effect_surv = period_effect_survival[1:nT_overall],
-#                   f_age_foi = f_age_foi[1:n_agef],
-#                   m_age_foi = m_age_foi[1:n_agem],
-#                   age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#                   age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#                   period_lookup = period_lookup[1:n_period_lookup],
-#                   f_period_foi = f_period_foi[1:n_period],
-#                   m_period_foi = m_period_foi[1:n_period],
-#                   space = space[1:n_sect],
-#                   sect = sect_hunt_pos[1:nInfHarvest]
-#                   )
+  y_hunt_pos[1:nInfHarvest] ~ dInfHarvest(n_samples = nInfHarvest,
+				          a = hunt_pos_ageweeks[1:nInfHarvest], #age (weeks) at harvest
+                  sex = hunt_pos_sex[1:nInfHarvest],
+                  age2date = hunt_pos_age2date[1:nInfHarvest],
+                  beta_sex = beta_sex,
+                  beta0_sus = beta0_sus,
+                  beta0_inf = beta0_inf,
+                  age_effect_surv = age_effect_survival[1:nT_age_surv],
+                  period_effect_surv = period_effect_survival[1:nT_overall],
+                  f_age_foi = f_age_foi[1:n_agef],
+                  m_age_foi = m_age_foi[1:n_agem],
+                  age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+                  age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+                  period_lookup = period_lookup[1:n_period_lookup],
+                  f_period_foi = f_period_foi[1:n_period],
+                  m_period_foi = m_period_foi[1:n_period],
+                  space = space[1:n_sect],
+                  sect = sect_hunt_pos[1:nInfHarvest]
+                  )
 
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   uninfected harvest deer
-# ###   d_fit_hunt_neg
-# ###   Overleaf Equation (5)
-# ###
-# #######################################################################
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   uninfected harvest deer
+###   d_fit_hunt_neg
+###   Overleaf Equation (5)
+###
+#######################################################################
 
-# # for (i in 1:nSusHarvest) {
-# #     y_hunt_neg[i] ~  dSusHarvest(
-# #         a = hunt_neg_ageweeks[i],
-# #         sex = hunt_neg_sex[i],
-# #         age2date = hunt_neg_age2date[i],
-# #         beta_sex = beta_sex,
-# #         beta0_sus = beta0_sus,
-# #         age_effect_surv = age_effect_survival[1:nT_age_surv],
-# #         period_effect_surv = period_effect_survival[1:nT_overall],
-# #         f_age_foi = f_age_foi[1:n_agef],
-# #         m_age_foi = m_age_foi[1:n_agem],
-# #         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-# #         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-# #         period_lookup = period_lookup[1:n_period_lookup],
-# #         f_period_foi = f_period_foi[1:n_period],
-# #         m_period_foi = m_period_foi[1:n_period],
-# #         space = space[sect_hunt_neg[i]]
-# #         )
-# # }
-
-#   y_hunt_neg[1:nSusHarvest] ~ dSusHarvest(n_samples = nSusHarvest,
-# 				          a = hunt_neg_ageweeks[1:nSusHarvest], #age (weeks) at harvest
-#                   sex = hunt_neg_sex[1:nSusHarvest],
-#                   age2date = hunt_neg_age2date[1:nSusHarvest],
-#                   beta_sex = beta_sex,
-#                   beta0_sus = beta0_sus,
-#                   age_effect_surv = age_effect_survival[1:nT_age_surv],
-#                   period_effect_surv = period_effect_survival[1:nT_overall],
-#                   f_age_foi = f_age_foi[1:n_agef],
-#                   m_age_foi = m_age_foi[1:n_agem],
-#                   age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#                   age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#                   period_lookup = period_lookup[1:n_period_lookup],
-#                   f_period_foi = f_period_foi[1:n_period],
-#                   m_period_foi = m_period_foi[1:n_period],
-#                   space = space[1:n_sect],
-#                   sect = sect_hunt_neg[1:nSusHarvest]
-#                   )
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   Uninfected radio-marked deer right censor:
-# ###   Test neg at cap and censoring
-# ###
-# ###   d_fit_sus_cens_posttest
-# ###   Overleaf Equation 7
-# ###
-# #######################################################################
-
-
-# for (i in 1:nSusCensTest) {
-#     y_sus_cens_posttest[i] ~ dSusCensTest(
-#         e = sus_cens_posttest_left_age_e[i],
-#         r = sus_cens_posttest_right_age_r[i],
-#         sex = sus_cens_posttest_sex[i],
-#         age2date = sus_cens_posttest_age2date[i],
+# for (i in 1:nSusHarvest) {
+#     y_hunt_neg[i] ~  dSusHarvest(
+#         a = hunt_neg_ageweeks[i],
+#         sex = hunt_neg_sex[i],
+#         age2date = hunt_neg_age2date[i],
 #         beta_sex = beta_sex,
 #         beta0_sus = beta0_sus,
 #         age_effect_surv = age_effect_survival[1:nT_age_surv],
@@ -258,372 +206,424 @@ modelcode <- nimbleCode({
 #         period_lookup = period_lookup[1:n_period_lookup],
 #         f_period_foi = f_period_foi[1:n_period],
 #         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_cens_posttest[i]]
+#         space = space[sect_hunt_neg[i]]
 #         )
-#   }
+# }
+
+  y_hunt_neg[1:nSusHarvest] ~ dSusHarvest(n_samples = nSusHarvest,
+				          a = hunt_neg_ageweeks[1:nSusHarvest], #age (weeks) at harvest
+                  sex = hunt_neg_sex[1:nSusHarvest],
+                  age2date = hunt_neg_age2date[1:nSusHarvest],
+                  beta_sex = beta_sex,
+                  beta0_sus = beta0_sus,
+                  age_effect_surv = age_effect_survival[1:nT_age_surv],
+                  period_effect_surv = period_effect_survival[1:nT_overall],
+                  f_age_foi = f_age_foi[1:n_agef],
+                  m_age_foi = m_age_foi[1:n_agem],
+                  age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+                  age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+                  period_lookup = period_lookup[1:n_period_lookup],
+                  f_period_foi = f_period_foi[1:n_period],
+                  m_period_foi = m_period_foi[1:n_period],
+                  space = space[1:n_sect],
+                  sect = sect_hunt_neg[1:nSusHarvest]
+                  )
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   Uninfected radio-marked deer right censor:
+###   Test neg at cap and censoring
+###
+###   d_fit_sus_cens_posttest
+###   Overleaf Equation 7
+###
+#######################################################################
 
 
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   Uninfected radio-marked deer right censored:
-# ###   Test neg at cap and censoring
-# ###
-# ###   d_fit_sus_cens_postno
-# ###   d_fit_endlive
-# ###
-# ###   Overleaf Equation (9)
-# ###
-# #######################################################################
-
-# for (i in 1:nSusCensNo) {
-#     y_sus_cens_postno[i] ~ dSusCensNo(
-#         e = sus_cens_postno_left_age_e[i],
-#         r = sus_cens_postno_right_age_r[i],
-#         sex = sus_cens_postno_sex[i],
-#         age2date = sus_cens_postno_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_cens_postno[i]]
-#         )
-#   }
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   uninfected radio-marked deer mortalities:
-# ###   test neg at cap and tested mort
-# ###
-# ###   d_fit_sus_mort_posttest
-# ###
-# ###   Overleaf Equation (11)
-# ###
-# #######################################################################
-
-# for (i in 1:nSusMortTest) {
-#     y_sus_mort_posttest[i] ~ dSusMortTest(
-#         e = sus_mort_posttest_left_age_e[i],
-#         r = sus_mort_posttest_right_age_r[i],
-#         s = sus_mort_posttest_right_age_s[i],
-#         sex = sus_mort_posttest_sex[i],
-#         fast = sus_mort_posttest_fast[i],
-#         age2date = sus_mort_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_mort_posttest[i]]
-#         )
-#   }
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   uninfected radio-marked deer mortalities:
-# ###   test neg at cap and no test at mortality
-# ###
-# ###   d_fit_sus_mort_postno
-# ###
-# ###   Overleaf Equation (13)
-# ###
-# #######################################################################
+for (i in 1:nSusCensTest) {
+    y_sus_cens_posttest[i] ~ dSusCensTest(
+        e = sus_cens_posttest_left_age_e[i],
+        r = sus_cens_posttest_right_age_r[i],
+        sex = sus_cens_posttest_sex[i],
+        age2date = sus_cens_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_cens_posttest[i]]
+        )
+  }
 
 
-# for (i in 1:nSusMortNoTest) {
-#     y_sus_mort_postno[i] ~ dSusMortNoTest(
-#         e = sus_mort_postno_left_age_e[i],
-#         r = sus_mort_postno_right_age_r[i],
-#         s = sus_mort_postno_right_age_s[i],
-#         dn1 = sus_mort_postno_dn1[i],
-#         sex = sus_mort_postno_sex[i],
-#         age2date = sus_mort_postno_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_mort_postno[i]]
-#         )
-#   }
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   Uninfected radio-marked deer right censored:
+###   Test neg at cap and censoring
+###
+###   d_fit_sus_cens_postno
+###   d_fit_endlive
+###
+###   Overleaf Equation (9)
+###
+#######################################################################
 
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   infected deer mortalities for radio marked deer that
-# ###   enter the study as test positive at capture
-# ###
-# ###   d_fit_icap_cens
-# ###
-# ###   Overleaf Equation (15)
-# ###
-# #######################################################################
+for (i in 1:nSusCensNo) {
+    y_sus_cens_postno[i] ~ dSusCensNo(
+        e = sus_cens_postno_left_age_e[i],
+        r = sus_cens_postno_right_age_r[i],
+        sex = sus_cens_postno_sex[i],
+        age2date = sus_cens_postno_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_cens_postno[i]]
+        )
+  }
 
-# for (i in 1:nIcapCens) {
-#     y_icap_cens[i] ~ dIcapCens(
-#         e = icap_cens_left_age_e[i],
-#         r = icap_cens_right_age_r[i],
-#         sex = icap_cens_sex[i],
-#         age2date = icap_cens_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_icap_cens[i]]
-#         )
-#   }
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   uninfected radio-marked deer mortalities:
+###   test neg at cap and tested mort
+###
+###   d_fit_sus_mort_posttest
+###
+###   Overleaf Equation (11)
+###
+#######################################################################
 
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   infected deer mortalities for radio marked deer that
-# ###   enter the study as test positive at capture
-# ###
-# ###   d_fit_icap_mort
-# ###
-# ###   Overleaf Equation (17)
-# ###
-# #######################################################################
+for (i in 1:nSusMortTest) {
+    y_sus_mort_posttest[i] ~ dSusMortTest(
+        e = sus_mort_posttest_left_age_e[i],
+        r = sus_mort_posttest_right_age_r[i],
+        s = sus_mort_posttest_right_age_s[i],
+        sex = sus_mort_posttest_sex[i],
+        fast = sus_mort_posttest_fast[i],
+        age2date = sus_mort_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_mort_posttest[i]]
+        )
+  }
 
-# for (i in 1:nIcapMort) {
-#     y_icap_mort[i] ~ dIcapMort(
-#         e = icap_mort_left_age_e[i],
-#         r = icap_mort_right_age_r[i],
-#         s = icap_mort_right_age_s[i],
-#         sex = icap_mort_sex[i],
-#         fast = icap_mort_fast[i],
-#         age2date = icap_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_icap_mort[i]]
-#         )
-#   }
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   uninfected deer that were test neg at capture,
-# ###   then test negative at recap, that are right censored, 
-# ###   and have been tested post censoring
-# ###
-# ###   d_fit_rec_neg_cens_posttest
-# ###
-# ###   Overleaf Equation (19)
-# ###
-# #######################################################################
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   uninfected radio-marked deer mortalities:
+###   test neg at cap and no test at mortality
+###
+###   d_fit_sus_mort_postno
+###
+###   Overleaf Equation (13)
+###
+#######################################################################
 
 
-# for (i in 1:nRecNegCensTest) {
-#     y_rec_neg_cens_posttest[i] ~ dRecNegCensTest(
-#         e = rec_neg_cens_posttest_left_age_e[i],
-#         r = rec_neg_cens_posttest_right_age_r[i],
-#         sex = rec_neg_cens_posttest_sex[i],
-#         age2date = rec_neg_cens_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_rec_neg_cens_posttest[i]]
-#         )
-#   }
+for (i in 1:nSusMortNoTest) {
+    y_sus_mort_postno[i] ~ dSusMortNoTest(
+        e = sus_mort_postno_left_age_e[i],
+        r = sus_mort_postno_right_age_r[i],
+        s = sus_mort_postno_right_age_s[i],
+        dn1 = sus_mort_postno_dn1[i],
+        sex = sus_mort_postno_sex[i],
+        age2date = sus_mort_postno_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_mort_postno[i]]
+        )
+  }
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer mortalities for radio marked deer that
+###   enter the study as test positive at capture
+###
+###   d_fit_icap_cens
+###
+###   Overleaf Equation (15)
+###
+#######################################################################
+
+for (i in 1:nIcapCens) {
+    y_icap_cens[i] ~ dIcapCens(
+        e = icap_cens_left_age_e[i],
+        r = icap_cens_right_age_r[i],
+        sex = icap_cens_sex[i],
+        age2date = icap_cens_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_icap_cens[i]]
+        )
+  }
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer mortalities for radio marked deer that
+###   enter the study as test positive at capture
+###
+###   d_fit_icap_mort
+###
+###   Overleaf Equation (17)
+###
+#######################################################################
+
+for (i in 1:nIcapMort) {
+    y_icap_mort[i] ~ dIcapMort(
+        e = icap_mort_left_age_e[i],
+        r = icap_mort_right_age_r[i],
+        s = icap_mort_right_age_s[i],
+        sex = icap_mort_sex[i],
+        fast = icap_mort_fast[i],
+        age2date = icap_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_icap_mort[i]]
+        )
+  }
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   uninfected deer that were test neg at capture,
+###   then test negative at recap, that are right censored, 
+###   and have been tested post censoring
+###
+###   d_fit_rec_neg_cens_posttest
+###
+###   Overleaf Equation (19)
+###
+#######################################################################
 
 
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   uninfected deer that were test neg at capture,
-# ###   then test negative at recap,
-# ###   that die
-# ###
-# ###
-# ###   d_fit_rec_neg_mort
-# ###
-# ###   Overleaf Equation (23)
-# ###
-# #######################################################################
+for (i in 1:nRecNegCensTest) {
+    y_rec_neg_cens_posttest[i] ~ dRecNegCensTest(
+        e = rec_neg_cens_posttest_left_age_e[i],
+        r = rec_neg_cens_posttest_right_age_r[i],
+        sex = rec_neg_cens_posttest_sex[i],
+        age2date = rec_neg_cens_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_rec_neg_cens_posttest[i]]
+        )
+  }
 
 
-# for (i in 1:nRecNegMort) {
-#     y_rec_neg_mort[i] ~ dRecNegMort(
-#         e = rec_neg_mort_left_age_e[i],
-#         r = rec_neg_mort_right_age_r[i],
-#         s = rec_neg_mort_right_age_s[i],
-#         sex = rec_neg_mort_sex[i],
-#         age2date = rec_neg_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_rec_neg_mort[i]]
-#         )
-#   }
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   deer that were test neg at capture,
-# ###   then test positive at recap,
-# ###   than die
-# ###
-# ###   d_fit_rec_pos_mort
-# ###
-# ###   Overleaf Equation (25)
-# ###
-# #######################################################################
-
-# for (i in 1:nRecPosMort) {
-#     y_rec_pos_mort[i] ~ dRecPosMort(
-#         e = rec_pos_mort_left_age_e[i],
-#         r = rec_pos_mort_right_age_r[i],
-#         s = rec_pos_mort_right_age_s[i],
-#         dn1 = rec_pos_mort_dn1[i],
-#         dn = rec_pos_mort_dn[i],
-#         sex = rec_pos_mort_sex[i],
-#         age2date = rec_pos_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_rec_pos_mort[i]]
-#         )
-#   }
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   infected deer that were test neg at capture,
-# ###   then test positive at recap,
-# ###   that are right censored
-# ###
-# ###   d_fit_rec_pos_cens
-# ###
-# ###   Overleaf Equation (27)
-# ###
-# #######################################################################
-
-#   y_rec_pos_cens ~ dRecPosCens(
-#       e = rec_pos_cens_left_age_e,
-#       r = rec_pos_cens_right_age_r,
-#       dn1 = rec_pos_cens_dn1,
-#       dn = rec_pos_cens_dn,
-#       sex = rec_pos_cens_sex,
-#       age2date = rec_pos_cens_age2date,
-#       beta_sex = beta_sex,
-#       beta0_sus = beta0_sus,
-#       beta0_inf = beta0_inf,
-#       age_effect_surv = age_effect_survival[1:nT_age_surv],
-#       period_effect_surv = period_effect_survival[1:nT_overall],
-#       f_age_foi = f_age_foi[1:n_agef],
-#       m_age_foi = m_age_foi[1:n_agem],
-#       age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#       age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#       period_lookup = period_lookup[1:n_period_lookup],
-#       f_period_foi = f_period_foi[1:n_period],
-#       m_period_foi = m_period_foi[1:n_period],
-#       space = space[sect_rec_pos_cens]
-#   )
-
-# #######################################################################
-# ###
-# ###   User defined distribution for likelihood for
-# ###   infected deer mortalities for radio marked deer that
-# ###   enter the study as test negative at capture
-# ###
-# ###   d_fit_idead
-# ###
-# ###   Overleaf Equation (29)
-# ###
-# #######################################################################
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   uninfected deer that were test neg at capture,
+###   then test negative at recap,
+###   that die
+###
+###
+###   d_fit_rec_neg_mort
+###
+###   Overleaf Equation (23)
+###
+#######################################################################
 
 
-# for (i in 1:nNegCapPosMort) {
-#     y_idead[i] ~ dNegCapPosMort(
-#         e = idead_left_age_e[i],
-#         r = idead_right_age_r[i],
-#         s = idead_right_age_s[i],
-#         dn1 = idead_dn1[i],
-#         dn = idead_dn[i],
-#         sex = idead_sex[i],
-#         age2date = idead_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-        # age_effect_surv = age_effect_survival[1:nT_age_surv],
-        # period_effect_surv = period_effect_survival[1:nT_overall],
-        # f_age_foi = f_age_foi[1:n_agef],
-        # m_age_foi = m_age_foi[1:n_agem],
-        # age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-        # age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-        # period_lookup = period_lookup[1:n_period_lookup],
-        # f_period_foi = f_period_foi[1:n_period],
-        # m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_idead[i]]
-#         )
-#   }
+for (i in 1:nRecNegMort) {
+    y_rec_neg_mort[i] ~ dRecNegMort(
+        e = rec_neg_mort_left_age_e[i],
+        r = rec_neg_mort_right_age_r[i],
+        s = rec_neg_mort_right_age_s[i],
+        sex = rec_neg_mort_sex[i],
+        age2date = rec_neg_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_rec_neg_mort[i]]
+        )
+  }
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   deer that were test neg at capture,
+###   then test positive at recap,
+###   than die
+###
+###   d_fit_rec_pos_mort
+###
+###   Overleaf Equation (25)
+###
+#######################################################################
+
+for (i in 1:nRecPosMort) {
+    y_rec_pos_mort[i] ~ dRecPosMort(
+        e = rec_pos_mort_left_age_e[i],
+        r = rec_pos_mort_right_age_r[i],
+        s = rec_pos_mort_right_age_s[i],
+        dn1 = rec_pos_mort_dn1[i],
+        dn = rec_pos_mort_dn[i],
+        sex = rec_pos_mort_sex[i],
+        age2date = rec_pos_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_rec_pos_mort[i]]
+        )
+  }
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer that were test neg at capture,
+###   then test positive at recap,
+###   that are right censored
+###
+###   d_fit_rec_pos_cens
+###
+###   Overleaf Equation (27)
+###
+#######################################################################
+
+  y_rec_pos_cens ~ dRecPosCens(
+      e = rec_pos_cens_left_age_e,
+      r = rec_pos_cens_right_age_r,
+      dn1 = rec_pos_cens_dn1,
+      dn = rec_pos_cens_dn,
+      sex = rec_pos_cens_sex,
+      age2date = rec_pos_cens_age2date,
+      beta_sex = beta_sex,
+      beta0_sus = beta0_sus,
+      beta0_inf = beta0_inf,
+      age_effect_surv = age_effect_survival[1:nT_age_surv],
+      period_effect_surv = period_effect_survival[1:nT_overall],
+      f_age_foi = f_age_foi[1:n_agef],
+      m_age_foi = m_age_foi[1:n_agem],
+      age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+      age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+      period_lookup = period_lookup[1:n_period_lookup],
+      f_period_foi = f_period_foi[1:n_period],
+      m_period_foi = m_period_foi[1:n_period],
+      space = space[sect_rec_pos_cens]
+  )
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer mortalities for radio marked deer that
+###   enter the study as test negative at capture
+###
+###   d_fit_idead
+###
+###   Overleaf Equation (29)
+###
+#######################################################################
+
+
+for (i in 1:nNegCapPosMort) {
+    y_idead[i] ~ dNegCapPosMort(
+        e = idead_left_age_e[i],
+        r = idead_right_age_r[i],
+        s = idead_right_age_s[i],
+        dn1 = idead_dn1[i],
+        dn = idead_dn[i],
+        sex = idead_sex[i],
+        age2date = idead_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_idead[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -898,10 +898,11 @@ Cnim <- compileNimble(Rmodel)
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
 for(i in 1:10){beepr::beep(1)}
+
 set.seed(7654321)
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 10,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
@@ -926,8 +927,7 @@ sink("runtime_allsteps.txt")
 # endtime_rmodel_compile
 # cat("\nCompile MCMC:\n")
 # endtime_mcmc
-cat("\nRun MCMC 1000 iter:\n")
-runtime
+cat("\nRun MCMC 1000 iter: ",runtime)
 sink()
 
 # reps  <- 2000
