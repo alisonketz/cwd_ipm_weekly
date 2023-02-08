@@ -136,11 +136,9 @@ levels(df_out$Sex) <- c("Female","Male")
 df_out$Status <- as.factor(df_out$censored)
 levels(df_out$Status) <- c("Mortality","Censored")
 df_out$ID=1:nrow(df_out)
-
 df_out$cwd_mort[is.na(df_out$cwd_mort)] <- "Unknown"
 df_out$cwd_cap <- as.factor(df_out$cwd_cap)
 df_out$cwd_mort <- as.factor(df_out$cwd_mort)
-
 levels(df_out$cwd_cap) <- c("Negative/Unknown","Positive")
 levels(df_out$cwd_mort) <- c("Negative","Positive","Unknown")
 
@@ -211,4 +209,44 @@ ggsave("figures/timein_age_status_plot.png",timein_age_sex_plot,height = 6, widt
 ###
 #############################################################
 
+# devtools::install_github("ottlngr/LexisPlotR")
+library(LexisPlotR)
+library(gapminder)
+df <- gapminder %>%
+  filter(year %in% c(1952,2007)) %>%
+  filter(continent %in% c("Asia")) %>%
+  select(country,year,lifeExp, gdpPercap)%>%
+  mutate(paired = rep(1:(n()/2),each=2),
+         year=factor(year))
+df
 
+# df_out2 <- pivot_longer(df_out,c(ID))
+# names(df_out2)
+
+df_out <- d_surv
+df_out <- df_out %>% arrange(left_age_e)
+df_out$Sex <- as.factor(df_out$sex)
+levels(df_out$Sex) <- c("Male","Female")
+df_out$Status <- as.factor(df_out$censored)
+levels(df_out$Status) <- c("Mortality","Censored")
+df_out$ID=1:nrow(df_out)
+df_out$cwd_mort[is.na(df_out$cwd_mort)] <- "Unknown"
+df_out$cwd_cap <- as.factor(df_out$cwd_cap)
+df_out$cwd_mort <- as.factor(df_out$cwd_mort)
+levels(df_out$cwd_cap) <- c("Negative/Unknown","Positive")
+levels(df_out$cwd_mort) <- c("Negative","Positive","Unknown")
+lex_plot <- ggplot(df_out)+
+    geom_segment(aes(x=left_period_e,y=left_age_e,xend=right_period_r,yend=right_age_r,color=Sex))+
+    scale_y_continuous(breaks=c(0,52*(1:20)),labels=0:20)+
+    ylab("Age (Year)")+
+    scale_x_continuous(breaks=c(0,52,52*2,52*3,52*4,52*5),labels=paste0("Jan ",2017:2022))+
+    xlab("Study Period (Year)")+
+    ggtitle("Survival Data on Lexis Plane")+
+    theme_bw()+
+    theme(axis.text=element_text(size=14),
+            axis.title=element_text(size=16),
+            legend.text=element_text(size=14),
+            legend.title=element_text(size=16),
+            title = element_text(size=16))
+lex_plot
+ggsave("figures/lex_plot.png",lex_plot,height = 6, width = 9)
