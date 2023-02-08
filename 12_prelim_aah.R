@@ -488,7 +488,7 @@ fec_init <- c(fawndoe_df$overall_fd,df_camtrap_fd$fdr_mean)
 # round(sn_inf,2)  
 
 ##########################################################################
-# preliminaries for survival model using GPS collar
+# preliminaries for survival model using AAH data
 ###########################################################################
 n_year_precollar <- length(1992:2016)
 n_year_collar <- length(2017:2021)
@@ -501,14 +501,16 @@ age_indx_yearling <- 104
 age_indx_2 <- 3*52
 age_indx_3 <- 4*52
 #question: how to pull the indexes for age effects since we have age classes in the m
-age_indx_4_5 <- 
+age_indx_4_5 
 
+1:nT_overall
 
+period_aah_lookup <- matrix(NA,nrow=n_year,ncol=2)
+#may-sep2022, non-harvest period
 
 ##########################################################################
 #loading age and period effects from imputation version of S/FOI model
 ###########################################################################
-
 
 load("~/Documents/integrate_s_foi/s_foi_v3/mcmcout.Rdata")
 
@@ -526,3 +528,4 @@ inf_beta0 <- unname(inf_beta0)
 inf_beta_sex <- unname(inf_beta_sex)
 nT_age <- length(age_effect)
 nT_period <- length(period_effect)
+

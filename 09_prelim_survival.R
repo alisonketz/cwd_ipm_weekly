@@ -1,50 +1,36 @@
-
-###
-### calibrating collar study time with start of harvest study time
-### for indexing
-### in the likelihood
-###
-# min(d_fit_hunt_neg$kill_date)
-# min(d_fit_hunt_pos$kill_date)
-# nT_overall <- floor(as.duration(ymd("2002-03-01") %--% ymd("2022-05-08"))/dweeks(1)) - 1
-# nT_period_presurv <- floor(as.duration(ymd("2002-03-01") %--% ymd("2017-01-07"))/dweeks(1)) - 1
-# floor(as.duration(ymd("2017-01-07") %--% ymd("2022-05-08"))/dweeks(1))
-
-#if we go from the first birth in 1992
-nT_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
-nT_period_presurv <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
-
 ###
 ### calibrating age of deer with the study time for indexing
 ### in the likelihood
 ###
 
 #left_period - left_age
-sus_age2date <- d_fit_sus$left_period_e - d_fit_sus$left_age_e + nT_period_presurv
-icap_cens_age2date <- d_fit_icap_cens$left_period_e - d_fit_icap_cens$left_age_e + nT_period_presurv
-icap_mort_age2date <- d_fit_icap_mort$left_period_e - d_fit_icap_mort$left_age_e + nT_period_presurv
-idead_age2date <- d_fit_idead$left_period_e - d_fit_idead$left_age_e + nT_period_presurv
-rec_neg_cens_posttest_age2date <- d_fit_rec_neg_cens_posttest$left_period_e - d_fit_rec_neg_cens_posttest$left_age_e + nT_period_presurv
-rec_neg_cens_postno_age2date <- d_fit_rec_neg_cens_postno$left_period_e - d_fit_rec_neg_cens_postno$left_age_e + nT_period_presurv
-rec_neg_mort_age2date <- d_fit_rec_neg_mort$left_period_e - d_fit_rec_neg_mort$left_age_e + nT_period_presurv
-rec_pos_cens_age2date <- d_fit_rec_pos_cens$left_period_e - d_fit_rec_pos_cens$left_age_e + nT_period_presurv
-rec_pos_mort_age2date <- d_fit_rec_pos_mort$left_period_e - d_fit_rec_pos_mort$left_age_e + nT_period_presurv
-sus_cens_postno_age2date <- d_fit_sus_cens_postno$left_period_e - d_fit_sus_cens_postno$left_age_e + nT_period_presurv
-sus_cens_posttest_age2date <- d_fit_sus_cens_posttest$left_period_e - d_fit_sus_cens_posttest$left_age_e + nT_period_presurv
-sus_mort_posttest_age2date <- d_fit_sus_mort_posttest$left_period_e - d_fit_sus_mort_posttest$left_age_e + nT_period_presurv
-sus_mort_postno_age2date <- d_fit_sus_mort_postno$left_period_e - d_fit_sus_mort_postno$left_age_e + nT_period_presurv
-endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e + nT_period_presurv
-
+sus_age2date <- d_fit_sus$left_period_e - d_fit_sus$left_age_e 
+icap_cens_age2date <- d_fit_icap_cens$left_period_e - d_fit_icap_cens$left_age_e 
+icap_mort_age2date <- d_fit_icap_mort$left_period_e - d_fit_icap_mort$left_age_e 
+idead_age2date <- d_fit_idead$left_period_e - d_fit_idead$left_age_e 
+rec_neg_cens_posttest_age2date <- d_fit_rec_neg_cens_posttest$left_period_e - d_fit_rec_neg_cens_posttest$left_age_e 
+rec_neg_cens_postno_age2date <- d_fit_rec_neg_cens_postno$left_period_e - d_fit_rec_neg_cens_postno$left_age_e 
+rec_neg_mort_age2date <- d_fit_rec_neg_mort$left_period_e - d_fit_rec_neg_mort$left_age_e 
+rec_pos_cens_age2date <- d_fit_rec_pos_cens$left_period_e - d_fit_rec_pos_cens$left_age_e 
+rec_pos_mort_age2date <- d_fit_rec_pos_mort$left_period_e - d_fit_rec_pos_mort$left_age_e 
+sus_cens_postno_age2date <- d_fit_sus_cens_postno$left_period_e - d_fit_sus_cens_postno$left_age_e 
+sus_cens_posttest_age2date <- d_fit_sus_cens_posttest$left_period_e - d_fit_sus_cens_posttest$left_age_e 
+sus_mort_posttest_age2date <- d_fit_sus_mort_posttest$left_period_e - d_fit_sus_mort_posttest$left_age_e 
+sus_mort_postno_age2date <- d_fit_sus_mort_postno$left_period_e - d_fit_sus_mort_postno$left_age_e 
+endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e 
 
 ###
 ### Number of age effects and number of period effects
 ###
 
 nT_age_surv <- max(d_surv$right_age_s, na.rm = TRUE) - 1
+nT_age_surv_m <- max(d_surv$right_age_smonth, na.rm = TRUE) - 1
+
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE) - 1
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE)
 
-nT_period_surv <- nT_overall - nT_period_presurv + 1
+nT_period_surv <- nT_overall - nT_period_presurv
+nT_period_surv_m <- nT_overall_m - nT_period_presurv_m
 
 
 ###############################

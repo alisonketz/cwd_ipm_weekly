@@ -1,34 +1,12 @@
-# head(d_surv)
+###############################################################
+###
+### Formatting data to fit the conditional probability that 
+### individuals that die during the hunting season die from 
+### hunter harvest mortality
+###
+##############################################################
 
-# format_data <- function(lowtag,e,r,s,censored,p1){
-#     x <- rbind(rep(0,5))
-#     for(i in 1:length(e)){
-#         if(censored[i] == 0){
-#             y <- c(lowtag[i],e[i],r[i],1,p1[i])
-#             z <- c(lowtag[i],r[i],s[i],0,p1[i])
-#             x <- rbind(x,y,z)
-#         }else{
-#             y <- c(lowtag[i],e[i],r[i],0,p1[i])
-#             x <- rbind(x,y)
-#         }
-#     }
-#     x <- x[-1,]
-#     rownames(x) = NULL
-#     x
-# }
-
-
-# d_fit <- format_data(lowtag = d_surv$lowtag,
-#             e = d_surv$left_period_e,
-#             r = d_surv$right_period_r,
-#             s = d_surv$right_period_s,
-#             censored = d_surv$censored,
-#             p1 = d_surv$p1)
-# d_fit
-
-
-
-d_fit <- d_surv[d_surv$censored == 0,]
+d_fit_hh <- d_surv[d_surv$censored == 0,]
 age_class_indx <- c(52,#fawns
                     52*2,#1
                     52*3,#2
@@ -37,12 +15,12 @@ age_class_indx <- c(52,#fawns
                     52*9#6-8
                     )#9.5+
 
-d_fit$ageclassmort <- c()
-for(i in 1:nrow(d_fit)){
-    if(d_fit$right_age_s[i] > 52*9){
-        d_fit$ageclassmort[i] <- 7
+d_fit_hh$ageclassmort <- c()
+for(i in 1:nrow(d_fit_hh)){
+    if(d_fit_hh$right_age_s[i] > 52*9){
+        d_fit_hh$ageclassmort[i] <- 7
     }else{
-        d_fit$ageclassmort[i] <- min(which(d_fit$right_age_s[i]<age_class_indx))
+        d_fit_hh$ageclassmort[i] <- min(which(d_fit_hh$right_age_s[i]<age_class_indx))
     }
 }
 
@@ -52,17 +30,15 @@ for(i in 1:nrow(d_fit)){
 #creating the response for the cause-specific likelihood
 #mort_h == 0 means that deer are not hunter harvest
 #mort_h == 1 means that deer are hunter harvested 
-d_fit$mort_h <- 0
-d_fit$mort_h[d_fit$p1==1] <- 1
+d_fit_hh$mort_h <- 0
+d_fit_hh$mort_h[d_fit_hh$p1==1] <- 1
 
-records_cause <- nrow(d_fit)
-n_ageclassf <- length(unique(d_fit$ageclassmort))
+records_cause <- nrow(d_fit_hh)
+n_ageclassf <- length(unique(d_fit_hh$ageclassmort))
 
 #change the sex for antlerless males (i.e. male fawns) to sex == 1
-d_fit$sex[d_fit$sex==0 & d_fit$ageclassmort==1] <- 1
-n_ageclassm <- length(unique(d_fit$ageclassmort[d_fit$sex==0]))
-
-table(d_fit$right_age_s[d_fit$sex==0])
+d_fit_hh$sex[d_fit_hh$sex==0 & d_fit_hh$ageclassmort==1] <- 1
+n_ageclassm <- length(unique(d_fit_hh$ageclassmort[d_fit_hh$sex==0]))
 
 ###########################################
 ###
@@ -71,6 +47,7 @@ table(d_fit$right_age_s[d_fit$sex==0])
 ###########################################
 
 d_huntseason <- read_xlsx("~/Documents/Data/Harvest/Hunting_SeasonDates.xlsx",1)
+d_season <- read_xlsx("~/Documents/Data/Harvest/Hunting_SeasonDates.xlsx",1)
 # c(d_huntseason[d_huntseason$SeasonType=="Gun",1])
 # c(d_huntseason[d_huntseason$SeasonType=="nineday",1])
 
@@ -94,10 +71,50 @@ for (i in 1:5) {
                                 d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
 }
 
-startng
-endng
-startgun
-endgun
+study_start <- "1992-05-15"
+
+season_ng_start <- c()
+season_ng_end <- c()
+season_gun_start <- c()
+season_gun_end <- c()
+
+i=1
+ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
+ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
+
+for (i in 1:length(unique(d_season$Year))) {
+    season_ng_start[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
+    season_ng_end[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
+
+    # season_gun_start[i] <- interval(startdate,
+    #     d_huntseason$OpenDate[d_huntseason$Year == (i + 1991) & 
+    #                             d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
+    # season_gun_end[i] <- interval(startdate,
+    #     d_huntseason$CloseDate[d_huntseason$Year == (i + 1991) & 
+    #                             d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
+}
+
+
+# i=15
+# min(d_season$OpenDate[d_season$Year == (i + 1991)])
+# max(d_season$CloseDate[d_season$Year == (i + 1991)])
+
+
+# d_season[d_season$Year==2006,]
+
+# ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
+# ceiling(as.duration(ymd("1992-05-15") %--% ymd(d_season$CloseDate[59]))/dweeks(1))
+
+
+#manually changing the wacky end of the gun season
+season_ng_end[which((season_ng_end - season_ng_start)>20)] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(d_season$CloseDate[59]))/dweeks(1))
+
+df_fit_season <- matrix(NA,nrow=30,ncol=6)
+df_fit_season[1,] <- c(1,season_ng_start[1]-1,season_ng_start[1],season_ng_end[1],season_ng_end[1],52)
+
+for(t in 1:n_year){
+   df_fit_season[t,] <- c(52*(t-1)+1,season_ng_start[t]-1,season_ng_start[t],season_ng_end[1],season_ng_end[t],52*t) 
+}
 
 ###########################################
 ###
@@ -108,10 +125,10 @@ endgun
 
 #rep(c("ng","gun"))
 #"ng"
-startdate <- min(df_cap$date_cap)
+# startdate <- min(df_cap$date_cap)
 
 # interval(df_cap$date_cap[!is.na(df_cap$recap_cwd)],df_cap$recapdate_cap[!is.na(df_cap$recap_cwd)]) %/% months(1)
-year  <- 2017:2021
+# year  <- 2017:2021
 
 # startng <- c(interval(startdate,"2017-09-16") %/% weeks(1)+1,
 #              interval(startdate,"2018-09-15") %/% weeks(1)+1,
