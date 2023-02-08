@@ -80,30 +80,36 @@ source("06_format_data_survival.R")
 
 source("07_format_data_combine_foi_surv.R")
 
+
+##########################################################
+### Setup collar data for FOI + Survival
+##########################################################
+
+source("08_format_data_cause.R")
+
 ###########################################################
 ### Setup consts etc for running the model
 ###########################################################
 
-source("08_prelim_survival.R")
-source("09_prelim_foi.R")
-source("10_prelim_collar_foi.R")
-source("11_prelim_aah.R")
-
-
-###########################################################
-### Run model
-###########################################################
-source("12_distributions_check.R")
-source("12_distributions.R")
+source("09_prelim_survival.R")
+source("10_prelim_foi.R")
+source("11_prelim_collar_foi.R")
+source("12_prelim_aah.R")
 
 ###########################################################
 ### Run model
 ###########################################################
+source("13_distributions_check.R")
+source("13_distributions.R")
 
-source("13_run_model.R")
+###########################################################
+### Run model
+###########################################################
+
+source("14_run_model.R")
 
 ###########################################################
 ### Post processing
 ###########################################################
 
-source("14_post_process.R")
+source("15_post_process.R")
