@@ -99,7 +99,7 @@ modelcode <- nimbleCode({
                             Z_age[t, 1:nknots_age])
   }
 
-  #Period effects
+  #Period effects from collar data
   for (k in 1:nknots_period) {
     b_period[k] ~ dnorm(0, tau_period)
   }
@@ -109,6 +109,48 @@ modelcode <- nimbleCode({
                                Z_period[t, 1:nknots_period])
   }
 
+  #Period effects from aah data
+  tau_period_precollar ~ dgamma(1,1)
+  for (k in 1:n_year_precollar) {
+    period_harv[k] ~ dnorm(0,tau_period_precollar)
+    period_nonharv[k] ~ dnorm(0,tau_period_precollar)
+  }
+  #making these sum
+  mu_period_harv <- mean(period_harv[1:n_year_precollar])
+  mu_period_nonharv <- mean(period_nonharv[1:n_year_precollar])
+
+  for (k in 1:n_year_precollar) {
+    period_surv_harv[k] <- period_harv[k] - mu_period_harv
+    period_surv_nonharv[k] <- period_nonharv[k] - mu_period_nonharv
+  }
+
+  # setting the period effects for survival 
+  # estimated without collar data
+  # based on the AAH data
+  for (k in 1:(n_year_precollar - 1)) {
+    for(j in period_aah_lookup[k,1]:period_aah_lookup[k,2]){
+      period_effect_survival[j] <- period_surv_nonharv[k]
+    }
+    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,4]){
+      period_effect_survival[j] <- period_surv_harv[k]
+    }
+    for(j in period_aah_lookup[k,5]:period_aah_lookup[k,6]){
+      period_effect_survival[j] <- period_surv_nonharv[k]
+    }
+  }
+  for(j in period_aah_lookup[n_year_precollar,1]:period_aah_lookup[n_year_precollar,2]){
+    period_effect_survival[j] <- period_surv_nonharv[n_year_precollar]
+  }
+  for(j in period_aah_lookup[n_year_precollar,3]:period_aah_lookup[n_year_precollar,4]){
+    period_effect_survival[j] <- period_surv_harv[n_year_precollar]
+  }
+
+  ############################################################
+  ## incorporating period effects from collar data
+  ############################################################
+
+  period_effect_survival[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
+
   ##################################
   ## Infected survival intercept
   ##################################
@@ -117,12 +159,6 @@ modelcode <- nimbleCode({
   beta0_inf_temp ~ dnorm(0, .01)
   inf_mix ~ dunif(-1, 1)
   beta0_inf <- beta0_inf_temp * inf_mix
-
-  ############################################################
-  ## setting up period effects across full study timeline
-  ############################################################
-
-  period_effect_survival[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
 
   #######################################################################
   #######################################################################
@@ -720,7 +756,8 @@ nimData <- list(Z_period = Z_period,
                 weights_period = weights_period,
                 age_lookup_f = age_lookup_col_f,
                 age_lookup_m = age_lookup_col_m,
-                period_effect_survival = period_effect_survival,
+                period_effect_survival = rep(NA,nT_overall),
+                # period_effect_survival = period_effect_survival,
                 y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
                 hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
                 hunt_pos_sex = d_fit_hunt_pos$sex,
@@ -815,9 +852,11 @@ nimConsts <- list(nT_overall = nT_overall,
                   nT_period_presurv = nT_period_presurv,
                   nknots_age = nknots_age,
                   nknots_period = nknots_period,
+                  n_year_precollar = n_year_precollar,
                   nT_age_surv = nT_age_surv,
                   nT_period_surv = nT_period_surv,
                   n_period_lookup = n_period_lookup,
+                  period_aah_lookup = d_fit_season[1:n_year_precollar,],
                   n_agef = n_agef,
                   n_agem = n_agem,
                   n_period = n_period,
@@ -886,7 +925,10 @@ initsFun <- function()list(
                           m_period_foi = seq(-2, 2, length = n_period),
                           f_period_foi = seq(-2, 2, length = n_period),
                           m_age_foi = seq(-6, -4, length = n_agem),
-                          f_age_foi = seq(-7, -5, length = n_agef)
+                          f_age_foi = seq(-7, -5, length = n_agef),
+                          tau_period_precollar = rgamma(1,1,1),
+                          period_harv = rnorm(nT_period_presurv),
+                          period_nonharv = rnorm(nT_period_presurv)
                           )
 nimInits <- initsFun()
 
@@ -899,7 +941,7 @@ Rmodel <- nimbleModel(code = modelcode,
                       check = FALSE
                       )
 # end_Rmodel <- Sys.time() - start_Rmodel
-# Rmodel$initializeInfo()
+Rmodel$initializeInfo()
 for(i in 1:10){beepr::beep(1)}
 
 #######################################

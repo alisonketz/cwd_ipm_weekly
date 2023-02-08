@@ -109,12 +109,12 @@ for (i in 1:length(unique(d_season$Year))) {
 #manually changing the wacky end of the gun season
 season_ng_end[which((season_ng_end - season_ng_start)>20)] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(d_season$CloseDate[59]))/dweeks(1))
 
-df_fit_season <- matrix(NA,nrow=30,ncol=6)
-df_fit_season[1,] <- c(1,season_ng_start[1]-1,season_ng_start[1],season_ng_end[1],season_ng_end[1],52)
-
+d_fit_season <- matrix(NA,nrow=n_year,ncol=6) #need six starting and end points for the season indexing
 for(t in 1:n_year){
-   df_fit_season[t,] <- c(52*(t-1)+1,season_ng_start[t]-1,season_ng_start[t],season_ng_end[1],season_ng_end[t],52*t) 
+   d_fit_season[t,] <- c(52*(t-1)+1,season_ng_start[t]-1,season_ng_start[t],season_ng_end[t],season_ng_end[t]+1,52*t) 
 }
+d_fit_season[n_year_precollar,4] <- d_fit_season[n_year_precollar,4] - 1
+
 
 ###########################################
 ###
