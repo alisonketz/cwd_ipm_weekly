@@ -276,12 +276,34 @@ for (i in 1:nSusCensTest) {
 ###
 #######################################################################
 
-for (i in 1:nSusCensNo) {
-    y_sus_cens_postno[i] ~ dSusCensNo(
-        e = sus_cens_postno_left_age_e[i],
-        r = sus_cens_postno_right_age_r[i],
-        sex = sus_cens_postno_sex[i],
-        age2date = sus_cens_postno_age2date[i],
+# for (i in 1:nSusCensNo) {
+#     y_sus_cens_postno[i] ~ dSusCensNo(
+#         e = sus_cens_postno_left_age_e[i],
+#         r = sus_cens_postno_right_age_r[i],
+#         sex = sus_cens_postno_sex[i],
+#         age2date = sus_cens_postno_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival[1:nT_age_surv],
+#         period_effect_surv = period_effect_survival[1:nT_overall],
+#         f_age_foi = f_age_foi[1:n_agef],
+#         m_age_foi = m_age_foi[1:n_agem],
+#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+#         period_lookup = period_lookup[1:n_period_lookup],
+#         f_period_foi = f_period_foi[1:n_period],
+#         m_period_foi = m_period_foi[1:n_period],
+#         space = space[sect_sus_cens_postno[i]]
+#         )
+#   }
+
+  y_sus_cens_postno[1:nSusCensNo] ~ dSusCensNo(
+        n_samples = nSusCensNo,
+        e = sus_cens_postno_left_age_e[1:nSusCensNo],
+        r = sus_cens_postno_right_age_r[1:nSusCensNo],
+        sex = sus_cens_postno_sex[1:nSusCensNo],
+        age2date = sus_cens_postno_age2date[1:nSusCensNo],
         beta_sex = beta_sex,
         beta0_sus = beta0_sus,
         beta0_inf = beta0_inf,
@@ -294,9 +316,9 @@ for (i in 1:nSusCensNo) {
         period_lookup = period_lookup[1:n_period_lookup],
         f_period_foi = f_period_foi[1:n_period],
         m_period_foi = m_period_foi[1:n_period],
-        space = space[sect_sus_cens_postno[i]]
+        space = space[1:n_sect],
+        sect = sect_sus_cens_postno[1:nSusCensNo]
         )
-  }
 
 #######################################################################
 ###
@@ -310,28 +332,52 @@ for (i in 1:nSusCensNo) {
 ###
 #######################################################################
 
-for (i in 1:nSusMortTest) {
-    y_sus_mort_posttest[i] ~ dSusMortTest(
-        e = sus_mort_posttest_left_age_e[i],
-        r = sus_mort_posttest_right_age_r[i],
-        s = sus_mort_posttest_right_age_s[i],
-        sex = sus_mort_posttest_sex[i],
-        fast = sus_mort_posttest_fast[i],
-        age2date = sus_mort_posttest_age2date[i],
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        age_effect_surv = age_effect_survival[1:nT_age_surv],
-        period_effect_surv = period_effect_survival[1:nT_overall],
-        f_age_foi = f_age_foi[1:n_agef],
-        m_age_foi = m_age_foi[1:n_agem],
-        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-        period_lookup = period_lookup[1:n_period_lookup],
-        f_period_foi = f_period_foi[1:n_period],
-        m_period_foi = m_period_foi[1:n_period],
-        space = space[sect_sus_mort_posttest[i]]
-        )
-  }
+
+# for (i in 1:nSusMortTest) {
+#     y_sus_mort_posttest[i] ~ dSusMortTest(
+#         e = sus_mort_posttest_left_age_e[i],
+#         r = sus_mort_posttest_right_age_r[i],
+#         s = sus_mort_posttest_right_age_s[i],
+#         sex = sus_mort_posttest_sex[i],
+#         fast = sus_mort_posttest_fast[i],
+#         age2date = sus_mort_posttest_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         age_effect_surv = age_effect_survival[1:nT_age_surv],
+#         period_effect_surv = period_effect_survival[1:nT_overall],
+#         f_age_foi = f_age_foi[1:n_agef],
+#         m_age_foi = m_age_foi[1:n_agem],
+#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+#         period_lookup = period_lookup[1:n_period_lookup],
+#         f_period_foi = f_period_foi[1:n_period],
+#         m_period_foi = m_period_foi[1:n_period],
+#         space = space[sect_sus_mort_posttest[i]]
+#         )
+#   }
+
+  y_sus_mort_posttest[1:nSusMortTest] ~ dSusMortTest(
+      n_samples = nSusMortTest,
+      e = sus_mort_posttest_left_age_e[1:nSusMortTest],
+      r = sus_mort_posttest_right_age_r[1:nSusMortTest],
+      s = sus_mort_posttest_right_age_s[1:nSusMortTest],
+      sex = sus_mort_posttest_sex[1:nSusMortTest],
+      fast = sus_mort_posttest_fast[1:nSusMortTest],
+      age2date = sus_mort_posttest_age2date[1:nSusMortTest],
+      beta_sex = beta_sex,
+      beta0_sus = beta0_sus,
+      age_effect_surv = age_effect_survival[1:nT_age_surv],
+      period_effect_surv = period_effect_survival[1:nT_overall],
+      f_age_foi = f_age_foi[1:n_agef],
+      m_age_foi = m_age_foi[1:n_agem],
+      age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+      age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+      period_lookup = period_lookup[1:n_period_lookup],
+      f_period_foi = f_period_foi[1:n_period],
+      m_period_foi = m_period_foi[1:n_period],
+      space = space[1:n_sect],
+      sect = sect_sus_mort_posttest[1:nSusMortTest]
+      )
 
 #######################################################################
 ###
