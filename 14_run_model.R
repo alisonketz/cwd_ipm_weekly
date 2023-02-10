@@ -111,46 +111,23 @@ modelcode <- nimbleCode({
 
   #Period effects from aah data
   tau_period_precollar ~ dgamma(1,1)
+  period_nonharv ~ dnorm(0, tau_period_precollar)
   for (k in 1:n_year_precollar) {
-    period_harv[k] ~ dnorm(0,tau_period_precollar)
-    period_nonharv[k] ~ dnorm(0,tau_period_precollar)
-  }
-  #making these sum
-  mu_period_harv <- mean(period_harv[1:n_year_precollar])
-  mu_period_nonharv <- mean(period_nonharv[1:n_year_precollar])
-
-  for (k in 1:n_year_precollar) {
-    period_surv_harv[k] <- period_harv[k] - mu_period_harv
-    period_surv_nonharv[k] <- period_nonharv[k] - mu_period_nonharv
+    period_harv[k] ~ dnorm(0, tau_period_precollar)
+    ### year-specific nonharvest survival
+    # period_nonharv[k] ~ dnorm(0, tau_period_precollar)
   }
 
-  # setting the period effects for survival 
-  # estimated without collar data
-  # based on the AAH data
-  for (k in 1:(n_year_precollar - 1)) {
-    for(j in period_aah_lookup[k,1]:period_aah_lookup[k,2]){
-      period_effect_survival[j] <- period_surv_nonharv[k]
-    }
-    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,4]){
-      period_effect_survival[j] <- period_surv_harv[k]
-    }
-    for(j in period_aah_lookup[k,5]:period_aah_lookup[k,6]){
-      period_effect_survival[j] <- period_surv_nonharv[k]
-    }
-  }
-  for(j in period_aah_lookup[n_year_precollar,1]:period_aah_lookup[n_year_precollar,2]){
-    period_effect_survival[j] <- period_surv_nonharv[n_year_precollar]
-  }
-  for(j in period_aah_lookup[n_year_precollar,3]:period_aah_lookup[n_year_precollar,4]){
-    period_effect_survival[j] <- period_surv_harv[n_year_precollar]
-  }
-
-  ############################################################
-  ## incorporating period effects from collar data
-  ############################################################
-
-  period_effect_survival[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
-
+  period_effect_survival[1:nT_overall] <- set_period_effects_scalar(
+        period_aah_lookup = period_aah_lookup[1:n_year_precollar,1:6],
+        n_year_precollar = n_year_precollar,
+        nT_period_presurv = nT_period_presurv,
+        nT_period_surv = nT_period_surv,
+        nT_overall = nT_overall,
+        period_effect_surv = period_effect_surv[1:nT_period_surv],
+        period_harv = period_harv[1:n_year_precollar],
+        period_nonharv = period_nonharv
+  )
   ##################################
   ## Infected survival intercept
   ##################################
