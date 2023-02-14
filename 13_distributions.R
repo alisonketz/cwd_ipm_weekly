@@ -2884,15 +2884,15 @@ set_period_effects_vec <- nimble::nimbleFunction(
         ### argument type declarations
         period_aah_lookup = double(2),
         n_year_precollar = double(0),
-        nT_period_presurv = double(0),
-        nT_period_surv = double(0),
-        nT_overall = double(0),
+        nT_period_precollar = double(0),
+        nT_period_collar = double(0),
+        nT_period_overall = double(0),
         period_effect_surv = double(1),
         period_harv = double(1),
         period_nonharv = double(1)
 
         ) {
-  period_effect_survival_temp <- nimNumeric(nT_overall)
+  period_effect_survival_temp <- nimNumeric(nT_period_overall)
   # setting the period effects for survival 
   # estimated without collar data
   # based on the AAH data
@@ -2921,12 +2921,12 @@ set_period_effects_vec <- nimble::nimbleFunction(
   ## incorporating period effects from collar data
   ############################################################
 
-  period_effect_survival_temp[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
+  period_effect_survival_temp[(nT_period_precollar + 1):nT_period_overall] <- period_effect_surv[1:nT_period_collar]
 
   #making the period effects sum to zero using centering
-  mu_period <- mean(period_effect_survival[1:nT_overall])
+  mu_period <- mean(period_effect_survival[1:nT_period_overall])
 
-  for (k in 1:nT_overall) {
+  for (k in 1:nT_period_overall) {
     period_effect_survival[k] <- period_effect_survival[k] - mu_period
   }
    
@@ -2948,14 +2948,14 @@ set_period_effects_scalar <- nimble::nimbleFunction(
         ### argument type declarations
         period_aah_lookup = double(2),
         n_year_precollar = double(0),
-        nT_period_presurv = double(0),
-        nT_period_surv = double(0),
-        nT_overall = double(0),
+        nT_period_precollar = double(0),
+        nT_period_collar = double(0),
+        nT_period_overall = double(0),
         period_effect_surv = double(1),
         period_harv = double(1),
         period_nonharv = double(0)
         ) {
-  period_effect_survival_temp <- nimNumeric(nT_overall)
+  period_effect_survival_temp <- nimNumeric(nT_period_overall)
   # setting the period effects for survival 
   # estimated without collar data
   # based on the AAH data
@@ -2984,16 +2984,16 @@ set_period_effects_scalar <- nimble::nimbleFunction(
   ## incorporating period effects from collar data
   ############################################################
 
-  period_effect_survival_temp[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
+  period_effect_survival_temp[(nT_period_precollar + 1):nT_period_overall] <- period_effect_surv[1:nT_period_collar]
 
   #making the period effects sum to zero using centering
-  mu_period <- mean(period_effect_survival[1:nT_overall])
+  mu_period <- mean(period_effect_survival[1:nT_period_overall])
 
-  for (k in 1:nT_overall) {
+  for (k in 1:nT_period_overall) {
     period_effect_survival[k] <- period_effect_survival[k] - mu_period
   }
    
   returnType(double(1))
-  return(period_effect_survival[1:nT_overall])
+  return(period_effect_survival[1:nT_period_overall])
 })
 

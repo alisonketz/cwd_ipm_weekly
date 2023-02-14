@@ -64,6 +64,6 @@ n_period_lookup_col_inf <- length(period_lookup_col_inf)
 #                             rep(-4.5,19),#sep2021-jan2022
 #                             rep(-6,22))#jan2022-May15,2022
 # length(period_effect_survival)
-# nT_overall
+# nT_period_overall
 
-# period_effect_survival[(nT_period_presurv + 1):(nT_overall)] <- NA
+# period_effect_survival[(nT_period_precollar + 1):(nT_period_overall)] <- NA

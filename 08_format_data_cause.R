@@ -78,20 +78,12 @@ season_ng_end <- c()
 season_gun_start <- c()
 season_gun_end <- c()
 
-i=1
-ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
-ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
+# ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
+# ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
 
 for (i in 1:length(unique(d_season$Year))) {
     season_ng_start[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
     season_ng_end[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
-
-    # season_gun_start[i] <- interval(startdate,
-    #     d_huntseason$OpenDate[d_huntseason$Year == (i + 1991) & 
-    #                             d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
-    # season_gun_end[i] <- interval(startdate,
-    #     d_huntseason$CloseDate[d_huntseason$Year == (i + 1991) & 
-    #                             d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
 }
 
 

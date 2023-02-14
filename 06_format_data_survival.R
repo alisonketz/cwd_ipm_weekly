@@ -223,9 +223,9 @@ d_surv$right_age_r[fix_fast_mortalities_indx] <- 1
 ##################################################
 
 censor_fix_low <- c(6817,6876,5153)
-d_surv[d_surv$lowtag==6817,]
-d_surv[d_surv$lowtag==6876,]
-d_surv[d_surv$lowtag==5153,]
+d_surv[d_surv$lowtag == 6817,]
+d_surv[d_surv$lowtag == 6876,]
+d_surv[d_surv$lowtag == 5153,]
 
 #these should have the recap ageweek and period week set to 0,
 d_surv$ageweek_recap[d_surv$lowtag %in% censor_fix_low] <- 0
@@ -246,7 +246,7 @@ low_recap_neg <- low_recap_neg[-rm_censor_fix_neg]
 ### removing the deer that were VERY fast
 ### right censors. i.e., lost collars within
 ### first week after capture, these don't contribute
-### any information to the estimate the effects
+### any information to estimate the effects
 ###
 ### 5052 6400 6081 5257 7113 7787
 ###
@@ -256,8 +256,6 @@ low_remove_fast_cens <- c(5052, 6400, 6081, 5257, 7113, 7787)
 
 d_surv <- d_surv[!(d_surv$lowtag %in% low_remove_fast_cens),]
 n_surv <- nrow(d_surv)
-
-
 
 ##########################################################################
 ###
@@ -270,28 +268,28 @@ n_surv <- nrow(d_surv)
 
 #the first birth is in 1992
 # weekly calculation
-nT_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
-nT_period_presurv <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+nT_period_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
+nT_period_precollar <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
 
 # monthly calculation of constants
-nT_overall_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dmonths(1)) - 1
-nT_period_presurv_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dmonths(1)) - 1
+nT_period_overall_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dmonths(1)) - 1
+nT_period_precollar_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dmonths(1)) - 1
 
 #recalibrating periods of collar data
 #weekly adjustment
 
-d_surv$left_period_e <- d_surv$left_period_e + nT_period_presurv
-d_surv$right_period_r <- d_surv$right_period_r + nT_period_presurv
-d_surv$right_period_s <- d_surv$right_period_s + nT_period_presurv
+d_surv$left_period_e <- d_surv$left_period_e + nT_period_precollar
+d_surv$right_period_r <- d_surv$right_period_r + nT_period_precollar
+d_surv$right_period_s <- d_surv$right_period_s + nT_period_precollar
 d_surv$periodweek_recap[d_surv$periodweek_recap != 0] <- 
           d_surv$periodweek_recap[d_surv$periodweek_recap != 0] + 
-          nT_period_presurv
+          nT_period_precollar
 
 #monthly adjustment
-d_surv$emonth <- d_surv$emonth + nT_period_presurv_m
-d_surv$rmonth <- d_surv$rmonth + nT_period_presurv_m
-d_surv$smonth <- d_surv$smonth + nT_period_presurv_m
+d_surv$emonth <- d_surv$emonth + nT_period_precollar_m
+d_surv$rmonth <- d_surv$rmonth + nT_period_precollar_m
+d_surv$smonth <- d_surv$smonth + nT_period_precollar_m
 d_surv$periodmonth_recap[d_surv$periodmonth_recap != 0] <- 
           d_surv$periodmonth_recap[d_surv$periodmonth_recap != 0] + 
-          nT_period_presurv_m
+          nT_period_precollar_m
 

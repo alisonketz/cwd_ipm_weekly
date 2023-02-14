@@ -26,11 +26,11 @@ endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e
 nT_age_surv <- max(d_surv$right_age_s, na.rm = TRUE) - 1
 nT_age_surv_m <- max(d_surv$right_age_smonth, na.rm = TRUE) - 1
 
-# nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE) - 1
-# nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE)
+# nT_period_collar <- max(d_surv$right_period_s, na.rm = TRUE) - 1
+# nT_period_collar <- max(d_surv$right_period_s, na.rm = TRUE)
 
-nT_period_surv <- nT_overall - nT_period_presurv
-nT_period_surv_m <- nT_overall_m - nT_period_presurv_m
+nT_period_collar <- nT_period_overall - nT_period_precollar
+nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
 
 
 ###############################
@@ -70,21 +70,22 @@ nknots_age <- dim(Z_age)[2]
 ##########################################
 
 intvl_period <- 13
-knots_period <- c(1,seq(intvl_period, nT_period_surv, by = intvl_period))
+knots_period <- c(1,seq(intvl_period, nT_period_collar, by = intvl_period))
 knots_period <- unique(knots_period)
 nknots_period <- length(knots_period)
-splinebasis <- bs(1:nT_period_surv, knots = knots_period)
-constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
-qrc <- qr(t(constr_sumzero))
-Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
-Z_period <- splinebasis%*%Z
+splinebasis <- bs(1:nT_period_collar, knots = knots_period)
+# constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
+# qrc <- qr(t(constr_sumzero))
+# Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
+# Z_period <- splinebasis%*%Z
+# Z_period <- splinebasis
 nknots_period <- dim(Z_period)[2]
 
 
 # pdf("figures/basis_function_time_bs.pdf")
-# plot(1:nT_period_surv,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
+# plot(1:nT_period_collar,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
 # for(i in 2:nknots_period){
-#   lines(1:nT_period_surv,Z_period[,i])
+#   lines(1:nT_period_collar,Z_period[,i])
 # }
 # dev.off()
 
@@ -140,10 +141,10 @@ nknots_period <- dim(Z_period)[2]
 ##########################################
 
 # inf_intvl_period <- 13
-# inf_knots_period <- c(1,seq(inf_intvl_period, inf_nT_period_surv, by = inf_intvl_period))
+# inf_knots_period <- c(1,seq(inf_intvl_period, inf_nT_period_collar, by = inf_intvl_period))
 # inf_knots_period <- unique(inf_knots_period)
 # inf_nknots_period <- length(inf_knots_period)
-# splinebasis <- bs(1:inf_nT_period_surv, knots = inf_knots_period)
+# splinebasis <- bs(1:inf_nT_period_collar, knots = inf_knots_period)
 # constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 # qrc <- qr(t(constr_sumzero))
 # Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
@@ -151,10 +152,10 @@ nknots_period <- dim(Z_period)[2]
 # inf_nknots_period <- dim(inf_Z_period)[2]
 # inf_nknots_period
 # inf_intvl_period <- 13
-# inf_knots_period <- c(1,seq(inf_intvl_period, nT_period_surv, by = inf_intvl_period))
+# inf_knots_period <- c(1,seq(inf_intvl_period, nT_period_collar, by = inf_intvl_period))
 # inf_knots_period <- unique(inf_knots_period)
 # inf_nknots_period <- length(inf_knots_period)
-# splinebasis <- bs(1:nT_period_surv, knots = inf_knots_period)
+# splinebasis <- bs(1:nT_period_collar, knots = inf_knots_period)
 # constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 # qrc <- qr(t(constr_sumzero))
 # Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
@@ -164,9 +165,9 @@ nknots_period <- dim(Z_period)[2]
 
 
 # pdf("figures/basis_function_time_bs.pdf")
-# plot(1:nT_period_surv,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
+# plot(1:nT_period_collar,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
 # for(i in 2:nknots_period){
-#   lines(1:nT_period_surv,Z_period[,i])
+#   lines(1:nT_period_collar,Z_period[,i])
 # }
 # dev.off()
 

@@ -99,7 +99,7 @@ period_effect_mean <- fit_sum[te_indx,1]
 period_effect_lower <- fit_sum[te_indx,4]
 period_effect_upper <- fit_sum[te_indx,5]
 
-weeks <- 1:nT_period_surv
+weeks <- 1:nT_period_collar
 
 out_period_effect <- data.frame(weeks,period_effect_mean,period_effect_lower,period_effect_upper)
 

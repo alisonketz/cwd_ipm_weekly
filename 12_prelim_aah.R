@@ -503,7 +503,6 @@ age_indx_3 <- 4*52
 #question: how to pull the indexes for age effects since we have age classes in the m
 age_indx_4_5 
 
-1:nT_overall
 
 period_aah_lookup <- matrix(NA,nrow=n_year,ncol=2)
 #may-sep2022, non-harvest period
