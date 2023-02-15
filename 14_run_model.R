@@ -119,7 +119,7 @@ modelcode <- nimbleCode({
   }
 
   period_effect_survival[1:nT_period_overall] <- set_period_effects_scalar(
-        period_aah_lookup = period_aah_lookup[1:n_year_precollar,1:6],
+        period_aah_lookup = period_aah_lookup[1:n_year_precollar,1:8],
         n_year_precollar = n_year_precollar,
         nT_period_precollar = nT_period_precollar,
         nT_period_collar = nT_period_collar,
@@ -727,19 +727,18 @@ for (i in 1:nAAH) {
   # beta0_male ~ dnorm(0, .01)
   beta_cause_gun ~ dnorm(0, .01)
   beta_cause_ng ~ dnorm(0, .01)
-  beta_cause_maleage ~ dnorm(0, .01)
+  beta_cause_male ~ dnorm(0, .01)
 
   #######################################################
   ###
-  ### Likelihood
+  ### Likelihood for cause of death
   ###
   #######################################################
 
-  # Likelihood cause of death
   for (i in 1:records_cause) {
       p_cause[i]  <- ilogit(beta0_cause + Z_ng[interval[i]] * beta_cause_ng +
                                         Z_gun[interval[i]] * beta_cause_gun +
-                                        sex_cause[i] * (beta_cause_maleage * ageclassmort[i]))
+                                        sex_cause[i] * beta_cause_male)
       mort_hh[i] ~ dbin(size = 1, prob = p_cause[i])
   }
 
@@ -750,16 +749,10 @@ for (i in 1:nAAH) {
   ###
   #######################################################
 
-  for(t in 1:nT_period){
-    for(a in 1:n_ageclassf){
-      p_hunt[a,t,1] <- ilogit(beta0 + Z_ng[t]*beta_ng + Z_gun[t]*beta_gun)#for females
+  for(t in 1:nT_period_overall){
+      p_hunt[t,1] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun)#for females
+      p_hunt[t,2] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun + beta_male)#for males
     }
-
-    for(a in 1:n_ageclassm){
-      p_hunt[a,t,2] <- ilogit(beta0 + Z_ng[t]*beta_ng + Z_gun[t]*beta_gun + beta_maleage*ageclassmort[a])#for males
-    }
-  }
-
 
   ##############################################################################
   ##############################################################################
@@ -816,22 +809,19 @@ for (i in 1:nAAH) {
   #### Fecundity
   ############################
 
-  mu_fec~ dnorm(0,1)
+  mu_fec ~ dnorm(0,1)
   fec_prec_eps ~ dgamma(1,1)
 
   #Observations of fawns & does overall from the 3 counties
+  #for 1992-2016
   for(t in 1:n_year_fec_early){
     fec_epsilon[t] ~ dnorm(0,fec_prec_eps)
     fec[t] <- exp(mu_fec + fec_epsilon[t])
-  }
-  for(t in 6:n_year_fec_early){
     Nfawn[t] ~ dpois(fec[t] * Ndoe[t])
   }
-
   #for 2017:2021
   for(t in 26:30){
     fec[t] ~ dgamma(obs_ct_fd_alpha[t],obs_ct_fd_beta[t])
-    # fec[t] ~ dlnorm(obs_ct_fd[t-n_year_fec_early],1/(obs_ct_fdsd[t-n_year_fec_early]^2))
   }
 
 ###################################################################

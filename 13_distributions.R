@@ -2900,10 +2900,10 @@ set_period_effects_vec <- nimble::nimbleFunction(
     for(j in period_aah_lookup[k,1]:period_aah_lookup[k,2]){
       period_effect_survival_temp[j] <- period_nonharv[k]
     }
-    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,4]){
+    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,6]){
       period_effect_survival_temp[j] <- period_harv[k]
     }
-    for(j in period_aah_lookup[k,5]:period_aah_lookup[k,6]){
+    for(j in period_aah_lookup[k,7]:period_aah_lookup[k,8]){
       period_effect_survival_temp[j] <- period_nonharv[k]
     }
   }
@@ -2963,10 +2963,10 @@ set_period_effects_scalar <- nimble::nimbleFunction(
     for(j in period_aah_lookup[k,1]:period_aah_lookup[k,2]){
       period_effect_survival_temp[j] <- period_nonharv
     }
-    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,4]){
+    for(j in period_aah_lookup[k,3]:period_aah_lookup[k,6]){
       period_effect_survival_temp[j] <- period_harv[k]
     }
-    for(j in period_aah_lookup[k,5]:period_aah_lookup[k,6]){
+    for(j in period_aah_lookup[k,7]:period_aah_lookup[k,8]){
       period_effect_survival_temp[j] <- period_nonharv
     }
   }
@@ -2976,7 +2976,7 @@ set_period_effects_scalar <- nimble::nimbleFunction(
   for(j in period_aah_lookup[n_year_precollar,1]:period_aah_lookup[n_year_precollar,2]){
     period_effect_survival_temp[j] <- period_nonharv[n_year_precollar]
   }
-  for(j in period_aah_lookup[n_year_precollar,3]:period_aah_lookup[n_year_precollar,4]){
+  for(j in period_aah_lookup[n_year_precollar,3]:period_aah_lookup[n_year_precollar,6]){
     period_effect_survival_temp[j] <- period_harv[n_year_precollar]
   }
 
@@ -2996,4 +2996,3 @@ set_period_effects_scalar <- nimble::nimbleFunction(
   returnType(double(1))
   return(period_effect_survival[1:nT_period_overall])
 })
-

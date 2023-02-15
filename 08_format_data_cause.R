@@ -53,12 +53,14 @@ d_season <- read_xlsx("~/Documents/Data/Harvest/Hunting_SeasonDates.xlsx",1)
 
 d_huntseason <- d_huntseason %>% filter(Year>2016)
 startdate <- min(df_cap$date_cap)
+n_year <- length(unique(d_season$Year))
+n_year_collar <- 5
 
 startng <- c()
 endng <- c()
 startgun <- c()
 endgun <- c()
-for (i in 1:5) {
+for (i in 1:n_year_collar) {
     startng[i] <- interval(startdate,
         min(d_huntseason$OpenDate[d_huntseason$Year == (i + 2016)])) %/% weeks(1)+1
     endng[i] <- interval(startdate,
@@ -72,41 +74,79 @@ for (i in 1:5) {
 }
 
 study_start <- "1992-05-15"
-
 season_ng_start <- c()
 season_ng_end <- c()
-season_gun_start <- c()
-season_gun_end <- c()
-
-# ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
-# ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
 
 for (i in 1:length(unique(d_season$Year))) {
     season_ng_start[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
     season_ng_end[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(max(d_season$CloseDate[d_season$Year == (i + 1991)])))/dweeks(1))
 }
 
+# pulling out approximate 9 day gun season
+temp <- d_season %>% filter(SeasonType == "nineday")
+nonineday <- c(1992:2020)[which(!(c(1992:2020) %in% temp$Year))]
+temp2 <- d_season %>% 
+            filter(Year %in% nonineday) %>% 
+            filter(SeasonType != "Archery" & SeasonType != "Muzzleloader" & SeasonType != "Youth Gun")
+temp2rm  <- c(5,6,8,11,12)
+temp2 <- temp2[-temp2rm,]
+temp <- rbind(temp,temp2)
+temp <- temp[order(temp$Year),]
+
+#just adding in a row for 2001 for now that has same 9day gun as 2000
+temp <- rbind(temp,temp[temp$Year==2000,])
+temp[nrow(temp),1] <- 2001
+temp[nrow(temp),4] <- as.Date("2001-11-18")
+temp[nrow(temp),5] <- as.Date("2001-11-26")
+temp <- temp[order(temp$Year),]
+
+
+class(temp$OpenDate)
+class(temp$CloseDate)
+tail(temp)
+temp[temp$Year==2001,]
+
+
+season_gun_start <- c()
+season_gun_end <- c()
+for (i in 1:length(unique(temp$Year))) {
+    season_gun_start[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(temp$OpenDate[temp$Year == (i + 1991)]))/dweeks(1))
+    season_gun_end[i] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(temp$CloseDate[temp$Year == (i + 1991)]))/dweeks(1))
+}
+
+
 
 # i=15
 # min(d_season$OpenDate[d_season$Year == (i + 1991)])
 # max(d_season$CloseDate[d_season$Year == (i + 1991)])
-
-
 # d_season[d_season$Year==2006,]
-
 # ceiling(as.duration(ymd("1992-05-15") %--% ymd(min(d_season$OpenDate[d_season$Year == (i + 1991)])))/dweeks(1))
 # ceiling(as.duration(ymd("1992-05-15") %--% ymd(d_season$CloseDate[59]))/dweeks(1))
 
 
-#manually changing the wacky end of the gun season
-season_ng_end[which((season_ng_end - season_ng_start)>20)] <- ceiling(as.duration(ymd("1992-05-15") %--% ymd(d_season$CloseDate[59]))/dweeks(1))
+###
+### what to do for 9-day-gun season when we had prolonged CWD seasons for gun + earn-a-buck?
+###
 
-d_fit_season <- matrix(NA,nrow=n_year,ncol=6) #need six starting and end points for the season indexing
+#need six starting and end points for the season indexing which corresponds to 
+# start of birth pulse period
+# then end non-harvest period
+# then ng_harvest start
+# then gun_harvest start
+# gun harvest end
+# ng harvest end
+# postharvest start
+# end of aah annual year, expressed in period effects
+
+n_year_precollar <- 25
+d_fit_season <- matrix(NA, nrow = n_year, ncol = 8)
 for(t in 1:n_year){
-   d_fit_season[t,] <- c(52*(t-1)+1,season_ng_start[t]-1,season_ng_start[t],season_ng_end[t],season_ng_end[t]+1,52*t) 
+   d_fit_season[t,] <- c(52*(t-1)+1,season_ng_start[t]-1,season_ng_start[t],season_gun_start[t],season_gun_end[t],season_ng_end[t],season_ng_end[t]+1,52*t) 
 }
-d_fit_season[n_year_precollar,4] <- d_fit_season[n_year_precollar,4] - 1
+d_fit_season[n_year_precollar,6] <- d_fit_season[n_year_precollar,6] - 1
 
+d_fit_season <- data.frame(d_fit_season)
+colnames(d_fit_season) <- c("yr_start","pre_hunt_end","ng_start","gun_start","gun_end","ng_end","post_hunt_start","yr_end")
 
 ###########################################
 ###
@@ -150,15 +190,23 @@ d_fit_season[n_year_precollar,4] <- d_fit_season[n_year_precollar,4] - 1
 #             interval(startdate,"2021-11-28") %/% weeks(1)+1
 #             )
 
-Z_ng <- rep(0,nT_period)
-Z_gun <- rep(0,nT_period)
+Z_cause_ng <- rep(0,nT_period_collar)
+Z_cause_gun <- rep(0,nT_period_collar)
 for(i in 1:5){
-    Z_ng[startng[i]:endng[i]] <- 1
-    Z_gun[startgun[i]:endgun[i]] <- 1
+    Z_cause_ng[startng[i]:endng[i]] <- 1
+    Z_cause_gun[startgun[i]:endgun[i]] <- 1
 }
 
-Z_ng
-Z_gun
+
+d_fit_season
+Z_overall_ng <- rep(0,nT_period_overall)
+Z_overall_gun <- rep(0,nT_period_overall)
+for(i in 1:n_year){
+    Z_overall_ng[d_fit_season$ng_start[i]:d_fit_season$ng_end[i]] <- 1
+    Z_overall_gun[d_fit_season$gun_start[i]:d_fit_season$gun_end[i]] <- 1
+}
+
+
 
 
 ################################################################
