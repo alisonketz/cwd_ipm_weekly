@@ -211,7 +211,12 @@ fix_fast_mortalities_indx <- d_surv$right_age_r == 0
 d_surv$right_period_r[fix_fast_mortalities_indx] <- d_surv$left_period_e[fix_fast_mortalities_indx]
 d_surv$right_age_r[fix_fast_mortalities_indx] <- 1
 
-
+# there are 2 fast mortalities for non-neonates
+# these need to have r fixed too, where r should equal e
+# the lowtags for these are 5080, 5219
+fix_fast_mortalities_nonneonate_indx <- which(d_surv$lowtag %in% c(5080,5219))
+d_surv$right_period_r[fix_fast_mortalities_nonneonate_indx] <- d_surv$left_period_e[fix_fast_mortalities_nonneonate_indx]
+d_surv$right_age_r[fix_fast_mortalities_nonneonate_indx] <- d_surv$left_age_e[fix_fast_mortalities_nonneonate_indx] 
 
 ##################################################
 ###
