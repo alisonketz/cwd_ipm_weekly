@@ -174,7 +174,7 @@ modelcode <- nimbleCode({
   #                 )
   # }
 
-  y_hunt_pos[1:nInfHarvest] ~ dInfHarvest(n_samples = nInfHarvest,
+  y_hunt_pos ~ dInfHarvest(n_samples = nInfHarvest,
 				          a = hunt_pos_ageweeks[1:nInfHarvest], #age (weeks) at harvest
                   sex = hunt_pos_sex[1:nInfHarvest],
                   age2date = hunt_pos_age2date[1:nInfHarvest],
@@ -223,7 +223,7 @@ modelcode <- nimbleCode({
 #         )
 # }
 
-  y_hunt_neg[1:nSusHarvest] ~ dSusHarvest(n_samples = nSusHarvest,
+  y_hunt_neg ~ dSusHarvest(n_samples = nSusHarvest,
 				          a = hunt_neg_ageweeks[1:nSusHarvest], #age (weeks) at harvest
                   sex = hunt_neg_sex[1:nSusHarvest],
                   age2date = hunt_neg_age2date[1:nSusHarvest],
@@ -311,7 +311,7 @@ for (i in 1:nSusCensTest) {
 #         )
 #   }
 
-  y_sus_cens_postno[1:nSusCensNo] ~ dSusCensNo(
+  y_sus_cens_postno ~ dSusCensNo(
         n_samples = nSusCensNo,
         e = sus_cens_postno_left_age_e[1:nSusCensNo],
         r = sus_cens_postno_right_age_r[1:nSusCensNo],
@@ -369,7 +369,7 @@ for (i in 1:nSusCensTest) {
 #         )
 #   }
 
-  y_sus_mort_posttest[1:nSusMortTest] ~ dSusMortTest(
+  y_sus_mort_posttest ~ dSusMortTest(
       n_samples = nSusMortTest,
       e = sus_mort_posttest_left_age_e[1:nSusMortTest],
       r = sus_mort_posttest_right_age_r[1:nSusMortTest],
@@ -736,8 +736,8 @@ for (i in 1:nAAH) {
   #######################################################
 
   for (i in 1:records_cause) {
-      p_cause[i]  <- ilogit(beta0_cause + Z_ng[interval[i]] * beta_cause_ng +
-                                        Z_gun[interval[i]] * beta_cause_gun +
+      p_cause[i]  <- ilogit(beta0_cause + Z_cause_ng[interval[i]] * beta_cause_ng +
+                                        Z_cause_gun[interval[i]] * beta_cause_gun +
                                         sex_cause[i] * beta_cause_male)
       mort_hh[i] ~ dbin(size = 1, prob = p_cause[i])
   }
@@ -824,72 +824,122 @@ for (i in 1:nAAH) {
     fec[t] ~ dgamma(obs_ct_fd_alpha[t],obs_ct_fd_beta[t])
   }
 
-###################################################################
-###
-### General Survival Surfaces for Susceptible/Infected Individuals
-###
-###################################################################
+# sn_sus[sex,age,period]
+# for(i in 1:nT_age) {
+#   for(j in 1:nT_period) {
+#     llambda_sus[2, i, j] <- sus_beta0 + age_effect[i] + period_effect[j]
+#     llambda_sus[1, i, j] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
+#     UCH0_sus[2, i, j] <- exp(llambda_sus[2, i, j])
+#     UCH0_sus[1, i, j] <- exp(llambda_sus[1, i, j])
+#     S0_sus[2, i, j] <- exp(-UCH0_sus[2, 1:i, 1:j])
+#     S0_sus[1, i, j] <- exp(-UCH0_sus[1, 1:i, 1:j])
+
+#     llambda_inf[2, i, j] <- inf_beta0 + age_effect[i] + period_effect[j]
+#     llambda_inf[1, i, j] <- inf_beta0 + age_effect[i] + period_effect[j] + inf_beta_sex
+#     UCH0_inf[2, i, j] <- exp(llambda_inf[2, i, j])
+#     UCH0_inf[1, i, j] <- exp(llambda_inf[1, i, j])
+#     S0_inf[2, i, j] <- exp(-UCH0_inf[2, 1:i, 1:j])
+#     S0_inf[1, i, j] <- exp(-UCH0_inf[1, 1:i, 1:j])
+#   }
+# }
 
 
-  for(i in 1:nT_age) {
-    for(j in 1:nT_period) {
-      llambda_sus[i, j, 2] <- sus_beta0 + age_effect[i] + period_effect[j]
-      llambda_sus[i, j, 1] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
-      UCH0_sus[i, j, 2] <- exp(llambda_sus[i,j,2])
-      UCH0_sus[i,j,1] <- exp(llambda_sus[i,j,1])
-      S0_sus[i,j,2] <- exp(-UCH0_sus[1:i,1:j,2])
-      S0_sus[i,j,1] <- exp(-UCH0_sus[1:i,1:j,1])
+# # fawns across all years
+# # sn_sus[sex, age(years), period(years)]
+# for (t in 1:n_year) {
+#   sn_sus[1, 1, t] <- S0_sus[1, yr_end_indx[t], intvl_step_yr] #antlerless fawns
+#   sn_sus[2, 1, t] <- S0_sus[2, yr_end_indx[t], intvl_step_yr] #antlered fawns
+# }
+# # first year all ages from process model
+# # antlerless yearlings and older first year
+# for(a in 2:n_agef) {
+#   sn_sus[1, a, 1] <- S0_sus[1, yr_end_indx[1], a * intvl_step_yr]
+# }
+# #antlered yearlings and older first year
+# for(a in 2:n_agef) {
+#   sn_sus[1, a, 1] <- S0_sus[1, yr_end_indx[1], a * intvl_step_yr]
+# }
+
+# #first year all ages from process model
+# for (t in 2:n_years) {
+#   for (a in 2:n_agef) {
+#     sn_sus[1, a, t] <- S0_sus[1, a * intvl_step_yr, yr_end_indx[t]]/
+#                         S0_sus[1, (a - 1) * intvl_step_yr, yr_end_indx[t - 1]]
+#   }
+#   for(a in 2:n_agem) {
+#     sn_sus[2, a, t] <- S0_sus[2, a * intvl_step_yr, yr_end_indx[t]]/
+#                         S0_sus[2, (a - 1)* intvl_step_yr, yr_end_indx[t - 1]]
+#   }
+# }
 
 
-      llambda_inf[i,j,2] <- inf_beta0 + age_effect[i] + period_effect[j]
-      llambda_inf[i,j,1] <- inf_beta0 + age_effect[i] + period_effect[j] + inf_beta_sex
-      UCH0_inf[i,j,2] <- exp(llambda_inf[i,j,2])
-      UCH0_inf[i,j,1] <- exp(llambda_inf[i,j,1])
-      S0_inf[i,j,2] <- exp(-UCH0_inf[1:i,1:j,2])
-      S0_inf[i,j,1] <- exp(-UCH0_inf[1:i,1:j,1])
-    }
-  }
+  #antlerless yearlings second year
+  # sn_sus[1, 2, 2] <- S0_sus[1, yr_end_indx[2], 2*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 1*intvl_step_yr]
+  # #antlerless 2 year olds, second year
+  # sn_sus[1, 2, 3] <- S0_sus[1, yr_end_indx[2], 3*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 2*intvl_step_yr]
+  # #antlerless 3 year olds, second year
+  # sn_sus[1, 2, 4] <- S0_sus[1, yr_end_indx[2], 4*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 3*intvl_step_yr]
+  # for(i in 1:nT_age) {
+  #   for(j in 1:nT_period) {
+  #     llambda_sus[i, j, 2] <- sus_beta0 + age_effect[i] + period_effect[j]
+  #     llambda_sus[i, j, 1] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
+  #     UCH0_sus[i, j, 2] <- exp(llambda_sus[i,j,2])
+  #     UCH0_sus[i,j,1] <- exp(llambda_sus[i,j,1])
+  #     S1_sus[i,j,2] <- exp(-UCH0_sus[1:i,1:j,2])
+  #     S1_sus[i,j,1] <- exp(-UCH0_sus[1:i,1:j,1])
 
-
-
-
-
-  for(i in 1:nT_age) {
-    for(j in 1:nT_period) {
-      llambda_sus[i, j, 2] <- sus_beta0 + age_effect[i] + period_effect[j]
-      llambda_sus[i, j, 1] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
-      UCH0_sus[i, j, 2] <- exp(llambda_sus[i,j,2])
-      UCH0_sus[i,j,1] <- exp(llambda_sus[i,j,1])
-      S0_sus[i,j,2] <- exp(-UCH0_sus[1:i,1:j,2])
-      S0_sus[i,j,1] <- exp(-UCH0_sus[1:i,1:j,1])
-    }
-  }
-
-  #         #ignoring cause-specific for now
-  #     #     for(k in 1:n_causes){
-  #     #       cause_haz[i,j,1] <- exp(llambda_all[i,j,1])*p_cause[k]
-  #     #       cause_haz[i,j,2] <- exp(llambda_all[i,j,2])*p_cause[k]
-  #     #     }
+  #     llambda_inf[i,j,2] <- inf_beta0 + age_effect[i] + period_effect[j]
+  #     llambda_inf[i,j,1] <- inf_beta0 + age_effect[i] + period_effect[j] + inf_beta_sex
+  #     UCH0_inf[i,j,2] <- exp(llambda_inf[i,j,2])
+  #     UCH0_inf[i,j,1] <- exp(llambda_inf[i,j,1])
+  #     S1_inf[i,j,2] <- exp(-UCH0_inf[1:i,1:j,2])
+  #     S1_inf[i,j,1] <- exp(-UCH0_inf[1:i,1:j,1])
   #   }
   # }
 
 
-
-  ###################################################
-  #### Hunting Survival Susceptibles
-  ###################################################
-
   ###################################################
   #### Overall Survival Susceptibles
   ###################################################
+
+  sn_sus[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+          nT_period = nT_period_overall,
+          beta0 = beta0_sus,
+          beta_sex = beta_sex,
+          age_effect = age_effect[1:nT_age],
+          period_effect = period_effect[1:nT_period],
+          yr_end_indx = yr_end_indx,
+          intvl_step_yr = intvl_step_yr,
+          n_year = n_year,
+          n_agef = n_agef,
+          n_agem = n_agem)
+
+  ###################################################
+  #### overall Survival Infected
+  ###################################################
+
+  sn_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+          nT_period = nT_period_overall,
+          beta0 = beta0_inf,
+          beta_sex = beta_sex,
+          age_effect = age_effect[1:nT_age],
+          period_effect = period_effect[1:nT_period],
+          yr_end_indx = yr_end_indx,
+          intvl_step_yr = intvl_step_yr,
+          n_year = n_year,
+          n_agef = n_agef,
+          n_agem = n_agem)
+
 
   ###################################################
   #### Hunting Survival Infected
   ###################################################
 
   ###################################################
-  #### overall Survival Infected
+  #### Hunting Survival Susceptibles
   ###################################################
+
+
 
 
   ######################################################################
@@ -900,59 +950,59 @@ for (i in 1:nAAH) {
   ###
   ######################################################################
 
-  ##################
-  ### Susceptible
-  ##################
+    ##################
+    ### Susceptible
+    ##################
 
-  for (t in 2:n_year) {
+    for (t in 2:n_year) {
     ###########
     # Females
     ###########
     #Female: project forward anually
     for (a in 1:(n_agef - 1)) {
-      pop_sus_proj[t, 1, a] <- pop_sus[t - 1, 1, a] * sh * sn_sus[t - 1, 1, a] * (1 - psi)
+      pop_sus_proj[1, t, a] <- pop_sus[1, t - 1, a] * sh * sn_sus[1, t - 1, a] * (1 - psi)
     }
 
     #female max age class
-    pop_sus_proj[t, 1, n_agef] <- pop_sus_proj[t, 1, (n_agef - 1)] + 
-                                  pop_sus[t - 1, 1, n_agef] * sh * sn_sus[t - 1, 1 , n_agef] * (1 - psi)
+    pop_sus_proj[1, t, n_agef] <- pop_sus_proj[1, t, (n_agef - 1)] + 
+                                  pop_sus[1, t - 1, n_agef] * sh * sn_sus[1, t - 1, n_agef] * (1 - psi)
 
     #Female: set projection into population model matrix
     for (a in 2:n_agef) {
-      pop_sus[t, 1, a] <- pop_sus_proj[t, 1, (a - 1)]
+      pop_sus[1, t, a] <- pop_sus_proj[1, t, (a - 1)]
     }
 
     #Male: fawn class = total #females * unisex fawns per female/2
     #(should this be divided by 2?)
-    pop_sus[t,1,1] <- (sum(pop_sus_proj[t, 1, 1:n_agef]) +
-                        sum(pop_inf_proj[t, 1, 1:n_agef])) * fec[t] * (1-psi) / 2 
+    pop_sus[1, t, 1] <- (sum(pop_sus_proj[1, t, 1:n_agef]) +
+                        sum(pop_inf_proj[1, t, 1:n_agef])) * fec[t] * (1-psi) / 2 
     ###########
     # Males
     ###########
 
     #Male: project forward anually
     for (a in 1:(n_agem - 1)) {
-      pop_sus_proj[t, 2, a] <- pop_sus[t - 1, 2, a] * sh * sn_sus[t - 1, 2, a] * (1 - psi)
+      pop_sus_proj[2, t, a] <- pop_sus[2, t - 1, a] * sh * sn_sus[2, t - 1, a] * (1 - psi)
     }
     
     #Male: max age class
-    pop_sus_proj[t, 2, n_agem] <- pop_sus_proj[t, 2, (n_agem - 1)] + 
-                                  pop_sus[t - 1, 2, n_agem] * sh * sn_sus[t - 1, 2, n_agem] * (1 - psi)
+    pop_sus_proj[2, t, n_agem] <- pop_sus_proj[2, t, (n_agem - 1)] + 
+                                  pop_sus[2, t - 1, n_agem] * sh * sn_sus[2, t - 1, n_agem] * (1 - psi)
 
 
     #Male: set projection into population model matrix
     for (a in 2:n_agem) {
-      pop_sus[t, 2, a] <- pop_sus_proj[t, 2, (a - 1)]
+      pop_sus[2, t, a] <- pop_sus_proj[2, t, (a - 1)]
     }
 
     #Male: fawn class = total #females * unisex fawns per female/2
     #(should this be divided by 2?)
-    pop_sus[t,2,1] <- (sum(pop_sus_proj[t, 1, 1:n_agef]) +
-                        sum(pop_inf_proj[t, 1, 1:n_agef])) * fec[t] * (1-psi) / 2 
+    pop_sus[2, t, 1] <- (sum(pop_sus_proj[1, t, 1:n_agef]) +
+                        sum(pop_inf_proj[1, t, 1:n_agef])) * fec[t] * (1-psi) / 2 
 
-  ###################################################
-  ### Infected/Infectious
-  ###################################################
+    ###################################################
+    ### Infected/Infectious
+    ###################################################
 
     ###########
     # Females
@@ -960,24 +1010,24 @@ for (i in 1:nAAH) {
 
     #Female: project forward anually
     for (a in 1:(n_agef - 1)) {
-      pop_inf_proj[t, 1, a] <- pop_inf[t - 1, 1, a] * sh * sn_inf[t - 1, 1, a] +
-                               pop_sus[t - 1, 1, a] * sh * sn_sus[t - 1, 1, a] * psi
+      pop_inf_proj[1, t, a] <- pop_inf[1, t - 1, a] * sh * sn_inf[1, t - 1, a] +
+                               pop_sus[1, t - 1, a] * sh * sn_sus[1, t - 1, a] * psi
     }
     #Female: max age = 9.5+ years
-    pop_inf_proj[t, 1, n_agef] <- pop_inf_proj[t, 1, (n_agef - 1)] +
-                                      pop_inf[t - 1, 1, n_agef] * sh * sn_inf[t - 1, 1, n_agef] +
-                                      pop_sus_proj[t, 1, (n_agef - 1)] * psi +
-                                      pop_sus[t - 1, 1, n_agef] * sh * sn_sus[t - 1, 1, n_agef] * psi
+    pop_inf_proj[1, t, n_agef] <- pop_inf_proj[1, t, (n_agef - 1)] +
+                                      pop_inf[1, t - 1, n_agef] * sh * sn_inf[1, t - 1, n_agef] +
+                                      pop_sus_proj[1, t, (n_agef - 1)] * psi +
+                                      pop_sus[1, t - 1, n_agef] * sh * sn_sus[1, t - 1, n_agef] * psi
 
     #Female: set projection into population model matrix
     for (a in 2:n_agef) {
-      pop_inf[t, 1, a] <- pop_inf_proj[t, 1, (a - 1)] 
+      pop_inf[1, t, a] <- pop_inf_proj[1, t, (a - 1)] 
     }
     
     #Female: fawn class = total #females * unisex fawns per female/2
     #(should this be divided by 2?)
-    pop_inf[t,1,1] <- (sum(pop_sus_proj[t, 1, 1:n_agef]) +
-                       sum(pop_inf_proj[t, 1, 1:n_agef])) * fec[t] * psi / 2
+    pop_inf[1, t,1] <- (sum(pop_sus_proj[1, t, 1:n_agef]) +
+                       sum(pop_inf_proj[1, t, 1:n_agef])) * fec[t] * psi / 2
 
     ###########
     # Males
@@ -985,24 +1035,24 @@ for (i in 1:nAAH) {
 
     #Male: project forward anually
     for (a in 1:(n_agem - 1)) {
-        pop_inf_proj[t, 2, a] <- pop_inf[t - 1, 2, a] * sh * sn_inf[t - 1, 2, a] +
-                                 pop_sus[t - 1, 2, a] * sh * sn_sus[t - 1, 2, a] * psi
+        pop_inf_proj[2, t, a] <- pop_inf[2, t - 1, a] * sh * sn_inf[2, t - 1, a] +
+                                 pop_sus[2, t - 1, a] * sh * sn_sus[2, t - 1, a] * psi
     }
 
     #Male: max age class
-    pop_inf_proj[t, 2, n_agem] <- pop_inf_proj[t, 2, (n_agem - 1)] +
-                                      pop_inf[t - 1, 2, n_agem] * sh * sn_inf[t - 1, 2, n_agem] +
-                                      pop_sus_proj[t, 2, (n_agem - 1)] * psi +
-                                      pop_sus[t - 1, 2, n_agem] * sh * sn_sus[t - 1, 2, n_agem] * psi
+    pop_inf_proj[2, t, n_agem] <- pop_inf_proj[2, t, (n_agem - 1)] +
+                                      pop_inf[2, t - 1, n_agem] * sh * sn_inf[2, t - 1, n_agem] +
+                                      pop_sus_proj[2, t, (n_agem - 1)] * psi +
+                                      pop_sus[2, t - 1, n_agem] * sh * sn_sus[2, t - 1, n_agem] * psi
 
     #Male: set projection into population model matrix
     for (a in 2:n_agem) {
-      pop_inf[t, 2, a] <- pop_inf_proj[t, 2, (a - 1)] 
+      pop_inf[2, t, a] <- pop_inf_proj[2, t, (a - 1)] 
     }
 
     #Male: fawn class = total #females * unisex fawns per female/2#(should this be divided by 2?)
-    pop_inf[t,2,1] <- (sum(pop_sus_proj[t, 1, 1:n_agef]) +
-                       sum(pop_inf_proj[t, 1, 1:n_agef])) * fec[t] * psi / 2
+    pop_inf[2, t, 1] <- (sum(pop_sus_proj[1, t, 1:n_agef]) +
+                       sum(pop_inf_proj[1, t, 1:n_agef])) * fec[t] * psi / 2
 
   }#end t
 
@@ -1017,23 +1067,23 @@ for (i in 1:nAAH) {
 
   for (t in 1:n_year) {
     for (a in 1:n_agef) {
-      Harvest[t, 1, a] <- (pop_inf[t, 1, a] + pop_sus[t, 1, a]) * (1 - sh) * report[t]
+      Harvest[1, t, a] <- (pop_inf[1, t, a] + pop_sus[1, t, a]) * (1 - sh) * report[t]
     }
     for (a in 1:n_agem) {
-      Harvest[t, 2, a] <- (pop_inf[t, 2, a] + pop_sus[t, 2, a]) * (1 - sh) * report[t]
+      Harvest[2, t, a] <- (pop_inf[2, t, a] + pop_sus[2, t, a]) * (1 - sh) * report[t]
     }
     #Total Antlerless Harvest
-    mu_obs[t, 1] <- sum(Harvest[t, 1, 1:n_agef]) + Harvest[t, 2, 1]#adding in male fawns
+    mu_obs[1, t] <- sum(Harvest[1, t, 1:n_agef]) + Harvest[2, t, 1]#adding in male fawns
 
     #Total Antlered Harvest
-    mu_obs[t, 2] <- sum(Harvest[t, 2, 2:n_agem])#excludes male fawns
+    mu_obs[1, t] <- sum(Harvest[2, t, 2:n_agem])#excludes male fawns
 
     ###################################
     #Likelihood for overall total
     ###################################
     
-    for (i in 1:n_sex) {
-      O[t, i] ~ dnorm(mu_obs[t, i], tau_obs[i])
+    for (j in 1:n_sex) {
+      O[j, t] ~ dnorm(mu_obs[j, t], tau_obs[j])
     }#end i
 
     ###################################
@@ -1060,7 +1110,7 @@ for (i in 1:nAAH) {
 
   }# end t
 
-  for(t in 11:n_year){
+  for(t in 11:n_year) {
     
     #antlerless, male fawns
     Cage_less[t - 10, 1:(n_ageclassf + 1)] ~ dmulti(prob = p_less[t, 1:(n_ageclassf + 1)], size = sizeCage_f[t-10])
@@ -1068,7 +1118,6 @@ for (i in 1:nAAH) {
     #antlered
     Cage_ant[t - 10, 1:(n_ageclassm - 1)] ~ dmulti(prob = p_ant[t, 1:(n_ageclassm - 1)], size = sizeCage_m[t-10])
   }
-
 
 
 })#end model statement
@@ -1089,62 +1138,62 @@ nimData <- list(Z_period = Z_period,
                 age_lookup_m = age_lookup_col_m,
                 period_effect_survival = rep(NA,nT_period_overall),
                 # period_effect_survival = period_effect_survival,
-                y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
+                y_hunt_pos = 1,
                 hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
                 hunt_pos_sex = d_fit_hunt_pos$sex,
                 hunt_pos_age2date = d_fit_hunt_pos$birthweek - 1,
-                y_hunt_neg = rep(1, nrow(d_fit_hunt_neg)),
+                y_hunt_neg = 1,
                 hunt_neg_ageweeks = d_fit_hunt_neg$ageweeks,
                 hunt_neg_sex = d_fit_hunt_neg$sex,
                 hunt_neg_age2date = d_fit_hunt_neg$birthweek - 1,
-                y_sus_cens_posttest = rep(1, nrow(d_fit_sus_cens_posttest)),
+                y_sus_cens_posttest = rep(1,nrow(d_fit_sus_cens_posttest)),
                 sus_cens_posttest_left_age_e = d_fit_sus_cens_posttest$left_age_e,
                 sus_cens_posttest_right_age_r = d_fit_sus_cens_posttest$right_age_r,
                 sus_cens_posttest_sex = d_fit_sus_cens_posttest$sex,
                 sus_cens_posttest_age2date = sus_cens_posttest_age2date,
-                y_sus_cens_postno = rep(1, nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive)),
+                y_sus_cens_postno = 1,
                 sus_cens_postno_left_age_e = c(d_fit_sus_cens_postno$left_age_e, d_fit_endlive$left_age_e),
                 sus_cens_postno_right_age_r = c(d_fit_sus_cens_postno$right_age_r, d_fit_endlive$right_age_r),
                 sus_cens_postno_sex = c(d_fit_sus_cens_postno$sex, d_fit_endlive$sex),
                 sus_cens_postno_age2date = c(sus_cens_postno_age2date, endlive_age2date),
-                y_sus_mort_posttest = rep(1, nrow(d_fit_sus_mort_posttest)),
+                y_sus_mort_posttest = 1,
                 sus_mort_posttest_left_age_e = d_fit_sus_mort_posttest$left_age_e,
                 sus_mort_posttest_right_age_r = d_fit_sus_mort_posttest$right_age_r,
                 sus_mort_posttest_right_age_s = d_fit_sus_mort_posttest$right_age_s,
                 sus_mort_posttest_fast = d_fit_sus_mort_posttest$fast,
                 sus_mort_posttest_sex = d_fit_sus_mort_posttest$sex,
                 sus_mort_posttest_age2date = sus_mort_posttest_age2date,
-                y_sus_mort_postno = rep(1, nrow(d_fit_sus_mort_postno)),
+                y_sus_mort_postno = rep(1,nrow(d_fit_sus_mort_postno)),
                 sus_mort_postno_left_age_e = d_fit_sus_mort_postno$left_age_e,
                 sus_mort_postno_right_age_r = d_fit_sus_mort_postno$right_age_r,
                 sus_mort_postno_right_age_s = d_fit_sus_mort_postno$right_age_s,
                 sus_mort_postno_dn1 = d_fit_sus_mort_postno$left_age_e,
                 sus_mort_postno_sex = d_fit_sus_mort_postno$sex,
                 sus_mort_postno_age2date = sus_mort_postno_age2date,
-                y_icap_cens = rep(1, nrow(d_fit_icap_cens)),
+                y_icap_cens = rep(1,nrow(d_fit_icap_cens)),
                 icap_cens_left_age_e = d_fit_icap_cens$left_age_e,
                 icap_cens_right_age_r = d_fit_icap_cens$right_age_r,
                 icap_cens_sex = d_fit_icap_cens$sex,
                 icap_cens_age2date = icap_cens_age2date,
-                y_icap_mort = rep(1, nrow(d_fit_icap_mort)),
+                y_icap_mort = rep(1,nrow(d_fit_icap_mort)),
                 icap_mort_left_age_e = d_fit_icap_mort$left_age_e,
                 icap_mort_right_age_r = d_fit_icap_mort$right_age_r,
                 icap_mort_right_age_s = d_fit_icap_mort$right_age_s,
                 icap_mort_sex = d_fit_icap_mort$sex,
                 icap_mort_fast = d_fit_icap_mort$fast,
                 icap_mort_age2date = icap_mort_age2date,
-                y_rec_neg_cens_posttest = rep(1, nrow(d_fit_rec_neg_cens_posttest)),
+                y_rec_neg_cens_posttest = rep(1,nrow(d_fit_rec_neg_cens_posttest)),
                 rec_neg_cens_posttest_left_age_e = d_fit_rec_neg_cens_posttest$left_age_e,
                 rec_neg_cens_posttest_right_age_r = d_fit_rec_neg_cens_posttest$right_age_r,
                 rec_neg_cens_posttest_sex = d_fit_rec_neg_cens_posttest$sex,
                 rec_neg_cens_posttest_age2date = rec_neg_cens_posttest_age2date,
-                y_rec_neg_mort = rep(1, nrow(d_fit_rec_neg_mort)),
+                y_rec_neg_mort = rep(1,nrow(d_fit_rec_neg_mort)),
                 rec_neg_mort_left_age_e = d_fit_rec_neg_mort$left_age_e,
                 rec_neg_mort_right_age_r = d_fit_rec_neg_mort$right_age_r,
                 rec_neg_mort_right_age_s = d_fit_rec_neg_mort$right_age_s,
                 rec_neg_mort_sex = d_fit_rec_neg_mort$sex,
                 rec_neg_mort_age2date = rec_neg_mort_age2date,
-                y_rec_pos_mort = rep(1, nrow(d_fit_rec_pos_mort)),
+                y_rec_pos_mort = rep(1,nrow(d_fit_rec_pos_mort)),
                 rec_pos_mort_left_age_e = d_fit_rec_pos_mort$left_age_e,
                 rec_pos_mort_right_age_r = d_fit_rec_pos_mort$right_age_r,
                 rec_pos_mort_right_age_s = d_fit_rec_pos_mort$right_age_s,
@@ -1152,14 +1201,14 @@ nimData <- list(Z_period = Z_period,
                 rec_pos_mort_dn = d_fit_rec_pos_mort$ageweek_recap,
                 rec_pos_mort_sex = d_fit_rec_pos_mort$sex,
                 rec_pos_mort_age2date = rec_pos_mort_age2date,
-                y_rec_pos_cens = rep(1, nrow(d_fit_rec_pos_cens)),
+                y_rec_pos_cens = rep(1,nrow(d_fit_rec_pos_cens)),
                 rec_pos_cens_left_age_e = d_fit_rec_pos_cens$left_age_e,
                 rec_pos_cens_right_age_r = d_fit_rec_pos_cens$right_age_r,
                 rec_pos_cens_dn1 = d_fit_rec_pos_cens$ageweek_recap,
                 rec_pos_cens_dn = d_fit_rec_pos_cens$right_age_r,
                 rec_pos_cens_sex = d_fit_rec_pos_cens$sex,
                 rec_pos_cens_age2date = rec_pos_cens_age2date,
-                y_idead = rep(1, nrow(d_fit_idead)),
+                y_idead = rep(1,nrow(d_fit_idead)),
                 idead_left_age_e = d_fit_idead$left_age_e,
                 idead_right_age_r = d_fit_idead$right_age_r,
                 idead_right_age_s = d_fit_idead$right_age_s,
@@ -1167,18 +1216,17 @@ nimData <- list(Z_period = Z_period,
                 idead_dn = d_fit_idead$right_age_s,
                 idead_sex = d_fit_idead$sex,
                 idead_age2date = idead_age2date,
-                y_aah = rep(1, nrow(d_fit_age_nocwd)),
+                y_aah = rep(1,nrow(d_fit_age_nocwd)),
                 aah_ageweeks = d_fit_age_nocwd$ageweeks,
                 aah_sex = d_fit_age_nocwd$sexnum,
                 aah_age2date = d_fit_age_nocwd$age2date_weeks,
                 aah_n = d_fit_age_nocwd$n,
                 mort_hh = d_fit_hh$mort_h,
                 ageclassmort = d_fit_hh$ageclassmort,
-                sex_cause = 
-                Z_gun = Z_gun,
-                Z_ng = Z_ng
+                sex_cause = d_fit_hh$sex,
+                Z_cause_gun = Z_cause_gun,
+                Z_cause_ng = Z_cause_ng
                 )
-
 
 #######################################
 ### Constants for MCMC
@@ -1236,7 +1284,8 @@ nimConsts <- list(nT_period_overall = nT_period_overall,
                   n_ageclassm = n_ageclassm,
                   sex_cause = 1 - d_fit_hh$sex,
                   interval = d_fit_hh$right_period_s - 1,
-                  nT_period = nT_period
+                  nT_period = nT_period,
+                  intvl_step_yr = intvl_step_yr
                   )
 
 

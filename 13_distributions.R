@@ -2996,3 +2996,79 @@ set_period_effects_scalar <- nimble::nimbleFunction(
   returnType(double(1))
   return(period_effect_survival[1:nT_period_overall])
 })
+
+#######################################################################
+###
+### Function to set and center period effects across full study time
+### vector version, where period effects for non-harvest period effects
+### based on aah data were different each year
+###
+#######################################################################
+
+calc_surv_aah <- nimble::nimbleFunction(
+    run = function(
+        ### argument type declarations
+        nT_age = double(0),
+        nT_period = double(0),
+        beta0 = double(0),
+        beta_sex = double(0),
+        age_effect = double(1),
+        period_effect = double(1),
+        yr_end_indx = double(1),
+        intvl_step_yr = double(0),
+        n_year = double(0),
+        n_agef = double(0),
+        n_agem = double(0)
+        ) {
+
+###################################################################
+###
+### General Survival Surfaces for Susceptible/Infected Individuals
+###
+###################################################################
+
+# s_aah[sex,age,period]
+S0 <- nimArray(NA,c(2,nT_age,nT_period))
+UCH <- nimArray(NA,c(2,nT_age,nT_period))
+s_aah <- nimArray(NA,c(2,n_agef,n_year))
+
+for(i in 1:nT_age) {
+  for(j in 1:nT_period) {
+    UCH[1, i, j] <- exp(beta0 + beta_sex + age_effect[i] + period_effect[j])
+    UCH[2, i, j] <- exp(beta0 + age_effect[i] + period_effect[j])
+    S0[1, i, j] <- exp(-sum(UCH[1,1:i,1:j]))
+    S0[2, i, j] <- exp(-sum(UCH[2,1:i,1:j]))
+  }
+}
+
+# fawns across all years
+# s_aah[sex, age(years), period(years)]
+for (t in 1:n_year) {
+  s_aah[1, 1, t] <- S0[1, yr_end_indx[t], intvl_step_yr] #antlerless fawns
+  s_aah[2, 1, t] <- S0[2, yr_end_indx[t], intvl_step_yr] #antlered fawns
+}
+# first year across all ages from sex-specific process model
+# antlerless yearlings and older first year
+for(a in 2:n_agef) {
+  s_aah[1, a, 1] <- S0[1, yr_end_indx[1], a * intvl_step_yr]
+}
+#antlered yearlings and older first year
+for(a in 2:n_agem) {
+  s_aah[1, a, 1] <- S0[1, yr_end_indx[1], a * intvl_step_yr]
+}
+
+#first year all ages from process model
+for (t in 2:n_years) {
+  for (a in 2:n_agef) {
+    s_aah[1, a, t] <- S0[1, a * intvl_step_yr, yr_end_indx[t]]/
+                        S0[1, (a - 1) * intvl_step_yr, yr_end_indx[t - 1]]
+  }
+  for(a in 2:n_agem) {
+    s_aah[2, a, t] <- S0[2, a * intvl_step_yr, yr_end_indx[t]]/
+                        S0[2, (a - 1)* intvl_step_yr, yr_end_indx[t - 1]]
+  }
+}
+
+  returnType(double(3))
+  return(s_aah[1:2,1:n_agef,1:n_year])
+})

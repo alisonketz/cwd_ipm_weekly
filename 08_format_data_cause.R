@@ -66,13 +66,12 @@ for (i in 1:n_year_collar) {
     endng[i] <- interval(startdate,
         max(d_huntseason$CloseDate[d_huntseason$Year == (i + 2016)])) %/% weeks(1)+1
     startgun[i] <- interval(startdate,
-        d_huntseason$OpenDate[d_huntseason$Year == (i + 2016) & 
+        d_huntseason$OpenDate[d_huntseason$Year == (i + 2016) &
                                 d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
     endgun[i] <- interval(startdate,
-        d_huntseason$CloseDate[d_huntseason$Year == (i + 2016) & 
+        d_huntseason$CloseDate[d_huntseason$Year == (i + 2016) &
                                 d_huntseason$SeasonType == "nineday"]) %/% weeks(1)+1
 }
-
 study_start <- "1992-05-15"
 season_ng_start <- c()
 season_ng_end <- c()
@@ -198,15 +197,12 @@ for(i in 1:5){
 }
 
 
-d_fit_season
 Z_overall_ng <- rep(0,nT_period_overall)
 Z_overall_gun <- rep(0,nT_period_overall)
 for(i in 1:n_year){
     Z_overall_ng[d_fit_season$ng_start[i]:d_fit_season$ng_end[i]] <- 1
     Z_overall_gun[d_fit_season$gun_start[i]:d_fit_season$gun_end[i]] <- 1
 }
-
-
 
 
 ################################################################

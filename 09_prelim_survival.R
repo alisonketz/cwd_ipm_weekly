@@ -33,6 +33,13 @@ nT_period_collar <- nT_period_overall - nT_period_precollar
 nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
 
 
+###
+### The number of integrals within a year, for weekly or monthly
+###
+intvl_step_yr <- 52
+# intvl_step_yr <- 12
+
+
 ###############################
 ###
 ### basis functions
@@ -41,12 +48,15 @@ nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
 ###############################
 
 quant_age <- .05
-knots_age <- unique(c(1,round(quantile(d_fit_sus$right_age_r,c(seq(quant_age,.99, by=quant_age),.99)))))
+knots_age <- unique(c(1,round(quantile(d_surv$right_age_r,
+                                      c(seq(quant_age, .99, by=quant_age),
+                                      .99)))))
 nknots_age <- length(knots_age)
 splinebasis <- ns(1:nT_age_surv, knots = knots_age)#,intercept=TRUE,
 constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 qrc <- qr(t(constr_sumzero))
-Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
+Z <- qr.Q(qrc,
+          complete = TRUE)[, (nrow(constr_sumzero) + 1):ncol(constr_sumzero)]
 Z_age <- splinebasis%*%Z
 nknots_age <- dim(Z_age)[2]
 
@@ -81,13 +91,14 @@ splinebasis <- bs(1:nT_period_collar, knots = knots_period)
 # Z_period <- splinebasis
 nknots_period <- dim(Z_period)[2]
 
-
 # pdf("figures/basis_function_time_bs.pdf")
 # plot(1:nT_period_collar,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
 # for(i in 2:nknots_period){
 #   lines(1:nT_period_collar,Z_period[,i])
 # }
 # dev.off()
+
+
 
 ###############################
 ###
