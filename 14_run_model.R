@@ -749,10 +749,22 @@ for (i in 1:nAAH) {
   ###
   #######################################################
 
-  for(t in 1:nT_period_overall){
-      p_hunt[t,1] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun)#for females
-      p_hunt[t,2] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun + beta_male)#for males
-    }
+  # for(t in 1:nT_period_overall){
+  #     p_hunt[t,1] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun)#for females
+  #     p_hunt[t,2] <- ilogit(beta0 + Z_overall_ng[t] * beta_ng + Z_overall_gun[t] * beta_gun + beta_male)#for males
+  #   }
+
+  # p_hunt[1,1] <- ilogit(beta0_cause + beta_cause_ng)
+  # p_hunt[1,2] <- ilogit(beta0_cause + beta_cause_ng + beta_cause_gun)
+  # p_hunt[2,1] <- ilogit(beta0_cause + beta_cause_ng + beta_cause_male)
+  # p_hunt[2,2] <- ilogit(beta0_cause + beta_cause_ng + beta_cause_gun + beta_cause_male)
+
+
+  p_nogun_f <- ilogit(beta0_cause + beta_cause_ng)
+  p_gun_f <- ilogit(beta0_cause + beta_cause_ng + beta_cause_gun)
+  p_nogun_m <- ilogit(beta0_cause + beta_cause_ng + beta_cause_male)
+  p_gun_m <- ilogit(beta0_cause + beta_cause_ng + beta_cause_gun + beta_cause_male)
+
 
   ##############################################################################
   ##############################################################################
@@ -935,11 +947,45 @@ for (i in 1:nAAH) {
   #### Hunting Survival Infected
   ###################################################
 
+  sh_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+          nT_period = nT_period_overall,
+          beta0 = beta0_inf,
+          beta_sex = beta_sex,
+          age_effect = age_effect[1:nT_age],
+          period_effect = period_effect[1:nT_period],
+          yr_end_indx = yr_end_indx,
+          intvl_step_yr = intvl_step_yr,
+          n_year = n_year,
+          n_agef = n_agef,
+          n_agem = n_agem,
+          pre_hunt_end = pre_hunt_end,
+          ng_start = ng_start,
+          gun_start = gun_start,
+          gun_end = gun_end,
+          ng_end = ng_end
+          )
+
   ###################################################
   #### Hunting Survival Susceptibles
   ###################################################
 
-
+  sh_sus[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+          nT_period = nT_period_overall,
+          beta0 = beta0_sus,
+          beta_sex = beta_sex,
+          age_effect = age_effect[1:nT_age],
+          period_effect = period_effect[1:nT_period],
+          yr_end_indx = yr_end_indx,
+          intvl_step_yr = intvl_step_yr,
+          n_year = n_year,
+          n_agef = n_agef,
+          n_agem = n_agem,
+          pre_hunt_end = pre_hunt_end,
+          ng_start = ng_start,
+          gun_start = gun_start,
+          gun_end = gun_end,
+          ng_end = ng_end
+          )
 
 
   ######################################################################
@@ -1285,7 +1331,12 @@ nimConsts <- list(nT_period_overall = nT_period_overall,
                   sex_cause = 1 - d_fit_hh$sex,
                   interval = d_fit_hh$right_period_s - 1,
                   nT_period = nT_period,
-                  intvl_step_yr = intvl_step_yr
+                  intvl_step_yr = intvl_step_yr,
+                  pre_hunt_end = d_fit_season$pre_hunt_end,
+                  ng_start = d_fit_season$ng_start,
+                  gun_start = d_fit_season$gun_start,
+                  gun_end = d_fit_season$gun_end,
+                  ng_end = d_fit_season$ng_end
                   )
 
 
