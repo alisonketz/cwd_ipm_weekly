@@ -44,6 +44,39 @@ head(df_harv)
 ###################################################################################################################################
 
 
+###################################################################################################################################
+#Loading and cleaning early Age Composition data (no cwd test)
+###################################################################################################################################
+
+df_age_early_male <-  read.csv(paste0(filepath,"age_composition_1994_2001_male.csv"))
+df_age_early_male$U <- NULL
+df_age_early_male <- df_age_early_male %>% group_by(YR) %>% 
+    summarise(across(everything(), sum, na.rm = TRUE),
+                .groups = 'drop')  %>%
+    as.data.frame()
+df_age_early_female <-  read.csv(paste0(filepath,"age_composition_1994_2001_female.csv"))
+df_age_early_female$U <- NULL
+df_age_early_female <- df_age_early_female %>% group_by(YR) %>% 
+    summarise(across(everything(), sum,na.rm = TRUE),
+                .groups = 'drop')  %>%
+    as.data.frame()
+df_age_early_female <- df_age_early_female %>% pivot_longer(!YR, names_to = "age", values_to = "count")
+df_age_early_male <- df_age_early_male %>% pivot_longer(!YR, names_to = "age", values_to = "count")
+df_age_early_female$age <- df_age_early_female$age %>% recode("A0" = 1,"A2" = 2, "A3" = 3, "A4" = 4,"A6" = 6, "A9" = 9, "ADD" = 0)
+df_age_early_male$age <- df_age_early_male$age %>% recode("ADB" = 0,"LS0" = 1, "RB0" = 1, "RB2" = 2,"RB3" = 3, "RB4" = 4, "RB6" = 6,"SB0" = 1,"SB3" = 3)
+df_age_early_male  <- suppressWarnings(df_age_early_male %>% group_by(YR,age) %>% dplyr::summarize(count=sum(count)))
+df_age_early_male$sex <- "Male"
+df_age_early_female$sex <- "Female"
+df_age_early <- rbind(df_age_early_female,df_age_early_male)
+
+names(df_age_early) <- c("year", "age", "n", "sex")
+df_age_early <- arrange(df_age_early,year,sex,age)
+
+fixn9m <-length(which(!(1994:2001 %in% df_age_early$year[df_age_early$sex=="Male" & df_age_early$age=="9"])))
+df_age_early <- rbind(df_age_early,data.frame(year=c(1994:2001),sex=rep("Male",fixn9m),age=rep("9",fixn9m),n=rep(0,fixn9m)))
+df_age_early <- arrange(df_age_early,year,sex,age)
+
+
 ########no disease status included######################################
 # df_age_cwd <- cwd_df %>% group_by(year,sex,age) %>% summarise(n=n())
 # df_age_cwd$sex <- as.factor(df_age_cwd$sex)
@@ -152,20 +185,29 @@ for(i in 1:nrow(df_age_sus)){
     }
 }
 
+### combine with the earlier age composition data
+df_age_sus <- rbind(df_age_early,df_age_sus)
+
 ### Number of age classes and sex classes
 Age <- 7 
 Sex <- 2
 
+### number of years in the study
+n_year <- length(unique(df_age_sus$year))
+
 #structuring classification data to fit into the model
-Cage_sus <- array(NA,c(length(unique(df_age_sus$year)),Sex,Age))
-for(j in 1:20){
-    Cage_sus[j,1,] <- df_age_sus$n[df_age_sus$year == (2001+j) & df_age_sus$sex == "Female"]
-    Cage_sus[j,2,] <- df_age_sus$n[df_age_sus$year == (2001+j) & df_age_sus$sex == "Male"]
+Cage_sus <- array(NA,c(length(unique(df_age_sus$year)), Sex, Age))
+for(j in 1:n_year) {
+    Cage_sus[j,1,] <- df_age_sus$n[df_age_sus$year == (1993 + j) &
+                                    df_age_sus$sex == "Female"]
+    Cage_sus[j,2,] <- df_age_sus$n[df_age_sus$year == (1993 + j) &
+                                    df_age_sus$sex == "Male"]
 }
 Cage_sus[,2,]
 
 #structuring classification data to fit into the model
 Cage_inf <- array(NA,c(length(unique(df_age_inf$year)),Sex,Age))
+n_year <- 28
 for(j in 1:20){
     Cage_inf[j,1,] <- df_age_inf$n[df_age_inf$year == (2001+j) & df_age_inf$sex == "Female"]
     Cage_inf[j,2,] <- df_age_inf$n[df_age_inf$year == (2001+j) & df_age_inf$sex == "Male"]
@@ -173,7 +215,8 @@ for(j in 1:20){
 # Cage_inf[,1,]
 # Cage_inf[,2,]
 
-Cage <- Cage_sus + Cage_inf
+Cage <- Cage_sus
+Cage[9:28,,] <- Cage[9:28,,] + Cage_inf
 
 #Aggregating the oldest age class for males into the next oldest age
 Cage[,2,6] <- Cage[,2,6] + Cage[,2,7]
@@ -271,8 +314,10 @@ for(i in 1992:2021){
 }
 df_harvest$unk_total <- df_harvest$gun_unk+df_harvest$bow_unk
 
+
 # O <- df_harvest[df_harvest$year>2001,]
-O <- df_harvest
+# O <- df_harvest
+O <- df_harvest[df_harvest$year>1993,]
 Y <- nrow(O)
 
 Ototal <- O[,c(1,2,3,10)]
@@ -336,17 +381,6 @@ names(report_hyp_y) <- c("alpha","beta")
 ###
 #####################################################################################
 
-#from raw data
-# fawndoe_df <- read.csv("~/Documents/Data/fawn_doe_ratio/County_Fawn_Doe_Ratio_Data_1997_2017.csv", header=TRUE)
-# county <- fawndoe_df[,1]
-# type <- fawndoe_df[,2]
-# fawndoe_df <- data.frame(t(fawndoe_df[,3:23]))
-# names(fawndoe_df) <- paste0(county,"_",type)
-# fawndoe_df$year <- 1997:2017
-# fawndoe_df <- fawndoe_df[,c(10,1:9)]
-# rownames(fawndoe_df) <- NULL
-# write.csv(fawndoe_df,file="~/Documents/Data/fawn_doe_ratio/fawndoe_1997_2017.csv",row.names=FALSE)
-
 fawndoe_df <- read.csv("~/Documents/Data/fawn_doe_ratio/fawndoe_1997_2017.csv",header=TRUE)
 
 #calculating overall fawn:doe ratios across all three counties
@@ -355,8 +389,7 @@ fawndoe_df$overall_fawn <- fawndoe_df$dane_num_fawn + fawndoe_df$iowa_num_fawn +
 fawndoe_df$overall_fd <- fawndoe_df$overall_fawn/fawndoe_df$overall_doe
 
 #Restricting to the years of the study
-# fawndoe_df <- fawndoe_df[fawndoe_df$year>2001 & fawndoe_df$year<2017,]
-fawndoe_df <- fawndoe_df[fawndoe_df$year<2017,]
+fawndoe_df <- fawndoe_df[fawndoe_df$year < 2017,]
 
 #2017-2021
 df_camtrap_fd <- read.csv("~/Documents/Data/fawn_doe_ratio/Iowa_FDR_2017-2021_with_sd.csv")
@@ -377,7 +410,7 @@ fawndoe_df$overall_fawn[indx_add] <- fd_older_df$overall_fawn
 fawndoe_df$overall_fd[indx_add] <- fd_older_df$overall_fd
 fawndoe_df <- fawndoe_df[order(fawndoe_df$year),]
 
-
+fawndoe_df <- fawndoe_df[fawndoe_df$year>1993,]
 
 ####################################################################################
 ###

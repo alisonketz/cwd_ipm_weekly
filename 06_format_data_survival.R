@@ -275,10 +275,12 @@ n_surv <- nrow(d_surv)
 # weekly calculation
 nT_period_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
 nT_period_precollar <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+nT_period_collar <- nT_period_overall - nT_period_precollar
 
 # monthly calculation of constants
 nT_period_overall_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dmonths(1)) - 1
 nT_period_precollar_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dmonths(1)) - 1
+nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
 
 #recalibrating periods of collar data
 #weekly adjustment

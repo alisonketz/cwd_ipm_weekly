@@ -836,80 +836,6 @@ for (i in 1:nAAH) {
     fec[t] ~ dgamma(obs_ct_fd_alpha[t],obs_ct_fd_beta[t])
   }
 
-# sn_sus[sex,age,period]
-# for(i in 1:nT_age) {
-#   for(j in 1:nT_period) {
-#     llambda_sus[2, i, j] <- sus_beta0 + age_effect[i] + period_effect[j]
-#     llambda_sus[1, i, j] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
-#     UCH0_sus[2, i, j] <- exp(llambda_sus[2, i, j])
-#     UCH0_sus[1, i, j] <- exp(llambda_sus[1, i, j])
-#     S0_sus[2, i, j] <- exp(-UCH0_sus[2, 1:i, 1:j])
-#     S0_sus[1, i, j] <- exp(-UCH0_sus[1, 1:i, 1:j])
-
-#     llambda_inf[2, i, j] <- inf_beta0 + age_effect[i] + period_effect[j]
-#     llambda_inf[1, i, j] <- inf_beta0 + age_effect[i] + period_effect[j] + inf_beta_sex
-#     UCH0_inf[2, i, j] <- exp(llambda_inf[2, i, j])
-#     UCH0_inf[1, i, j] <- exp(llambda_inf[1, i, j])
-#     S0_inf[2, i, j] <- exp(-UCH0_inf[2, 1:i, 1:j])
-#     S0_inf[1, i, j] <- exp(-UCH0_inf[1, 1:i, 1:j])
-#   }
-# }
-
-
-# # fawns across all years
-# # sn_sus[sex, age(years), period(years)]
-# for (t in 1:n_year) {
-#   sn_sus[1, 1, t] <- S0_sus[1, yr_end_indx[t], intvl_step_yr] #antlerless fawns
-#   sn_sus[2, 1, t] <- S0_sus[2, yr_end_indx[t], intvl_step_yr] #antlered fawns
-# }
-# # first year all ages from process model
-# # antlerless yearlings and older first year
-# for(a in 2:n_agef) {
-#   sn_sus[1, a, 1] <- S0_sus[1, yr_end_indx[1], a * intvl_step_yr]
-# }
-# #antlered yearlings and older first year
-# for(a in 2:n_agef) {
-#   sn_sus[1, a, 1] <- S0_sus[1, yr_end_indx[1], a * intvl_step_yr]
-# }
-
-# #first year all ages from process model
-# for (t in 2:n_years) {
-#   for (a in 2:n_agef) {
-#     sn_sus[1, a, t] <- S0_sus[1, a * intvl_step_yr, yr_end_indx[t]]/
-#                         S0_sus[1, (a - 1) * intvl_step_yr, yr_end_indx[t - 1]]
-#   }
-#   for(a in 2:n_agem) {
-#     sn_sus[2, a, t] <- S0_sus[2, a * intvl_step_yr, yr_end_indx[t]]/
-#                         S0_sus[2, (a - 1)* intvl_step_yr, yr_end_indx[t - 1]]
-#   }
-# }
-
-
-  #antlerless yearlings second year
-  # sn_sus[1, 2, 2] <- S0_sus[1, yr_end_indx[2], 2*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 1*intvl_step_yr]
-  # #antlerless 2 year olds, second year
-  # sn_sus[1, 2, 3] <- S0_sus[1, yr_end_indx[2], 3*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 2*intvl_step_yr]
-  # #antlerless 3 year olds, second year
-  # sn_sus[1, 2, 4] <- S0_sus[1, yr_end_indx[2], 4*intvl_step_yr]/S0_sus[1, yr_end_indx[1], 3*intvl_step_yr]
-  # for(i in 1:nT_age) {
-  #   for(j in 1:nT_period) {
-  #     llambda_sus[i, j, 2] <- sus_beta0 + age_effect[i] + period_effect[j]
-  #     llambda_sus[i, j, 1] <- sus_beta0 + age_effect[i] + period_effect[j] + sus_beta_sex
-  #     UCH0_sus[i, j, 2] <- exp(llambda_sus[i,j,2])
-  #     UCH0_sus[i,j,1] <- exp(llambda_sus[i,j,1])
-  #     S1_sus[i,j,2] <- exp(-UCH0_sus[1:i,1:j,2])
-  #     S1_sus[i,j,1] <- exp(-UCH0_sus[1:i,1:j,1])
-
-  #     llambda_inf[i,j,2] <- inf_beta0 + age_effect[i] + period_effect[j]
-  #     llambda_inf[i,j,1] <- inf_beta0 + age_effect[i] + period_effect[j] + inf_beta_sex
-  #     UCH0_inf[i,j,2] <- exp(llambda_inf[i,j,2])
-  #     UCH0_inf[i,j,1] <- exp(llambda_inf[i,j,1])
-  #     S1_inf[i,j,2] <- exp(-UCH0_inf[1:i,1:j,2])
-  #     S1_inf[i,j,1] <- exp(-UCH0_inf[1:i,1:j,1])
-  #   }
-  # }
-
-
   ###################################################
   #### Overall Survival Susceptibles
   ###################################################
@@ -927,7 +853,7 @@ for (i in 1:nAAH) {
           n_agem = n_agem)
 
   ###################################################
-  #### overall Survival Infected
+  #### Overall Survival CWD Infected
   ###################################################
 
   sn_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
@@ -941,29 +867,6 @@ for (i in 1:nAAH) {
           n_year = n_year,
           n_agef = n_agef,
           n_agem = n_agem)
-
-
-  ###################################################
-  #### Hunting Survival Infected
-  ###################################################
-
-  sh_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
-          nT_period = nT_period_overall,
-          beta0 = beta0_inf,
-          beta_sex = beta_sex,
-          age_effect = age_effect[1:nT_age],
-          period_effect = period_effect[1:nT_period],
-          yr_end_indx = yr_end_indx,
-          intvl_step_yr = intvl_step_yr,
-          n_year = n_year,
-          n_agef = n_agef,
-          n_agem = n_agem,
-          pre_hunt_end = pre_hunt_end,
-          ng_start = ng_start,
-          gun_start = gun_start,
-          gun_end = gun_end,
-          ng_end = ng_end
-          )
 
   ###################################################
   #### Hunting Survival Susceptibles
@@ -987,6 +890,27 @@ for (i in 1:nAAH) {
           ng_end = ng_end
           )
 
+  ###################################################
+  #### Hunting Survival Infected
+  ###################################################
+
+  sh_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+          nT_period = nT_period_overall,
+          beta0 = beta0_inf,
+          beta_sex = beta_sex,
+          age_effect = age_effect[1:nT_age],
+          period_effect = period_effect[1:nT_period],
+          yr_end_indx = yr_end_indx,
+          intvl_step_yr = intvl_step_yr,
+          n_year = n_year,
+          n_agef = n_agef,
+          n_agem = n_agem,
+          pre_hunt_end = pre_hunt_end,
+          ng_start = ng_start,
+          gun_start = gun_start,
+          gun_end = gun_end,
+          ng_end = ng_end
+          )
 
   ######################################################################
   ###
@@ -1156,13 +1080,13 @@ for (i in 1:nAAH) {
 
   }# end t
 
-  for(t in 11:n_year) {
+  for(t in 1:n_year){
     
-    #antlerless, male fawns
-    Cage_less[t - 10, 1:(n_ageclassf + 1)] ~ dmulti(prob = p_less[t, 1:(n_ageclassf + 1)], size = sizeCage_f[t-10])
+    #antlerless, including male fawns
+    Cage_less[t, 1:(n_ageclassf + 1)] ~ dmulti(prob = p_less[t, 1:(n_ageclassf + 1)], size = sizeCage_f[t])
     
     #antlered
-    Cage_ant[t - 10, 1:(n_ageclassm - 1)] ~ dmulti(prob = p_ant[t, 1:(n_ageclassm - 1)], size = sizeCage_m[t-10])
+    Cage_ant[t, 1:(n_ageclassm - 1)] ~ dmulti(prob = p_ant[t, 1:(n_ageclassm - 1)], size = sizeCage_m[t])
   }
 
 

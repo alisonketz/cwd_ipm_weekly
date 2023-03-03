@@ -27,7 +27,8 @@ d_fit_age_nocwd <- df_age_nocwd[df_age_nocwd$n>0,]
 ###################################################
 
 # n_year <- length(2002:2021)
-n_year <- length(1992:2021)
+# n_year <- length(1992:2021)
+n_year <- length(1994:2021)
 n_ageclass <- 7
 n_ageclassm <- 6
 n_ageclassf <- 7
@@ -43,54 +44,28 @@ assumN_sus <- array(0, dim = c(n_year,n_sex,n_agef))
 # assumN_sus.m.1 <- c(2529,2098,1115, 651,414,284,212,158,122,3)
 
 ###
-### 1992-2001, no age classification data
-###
-
-for(y in 1:10){
-  for(a in 1:4){
-    assumN_sus[y,1,a] <- Ototal$antlerless[y]*Cage_sus[11,1,a]/sum(Cage_sus[11,1,]) #F,1,2,3,
-  }
-  assumN_sus[y,1,5] <- (Ototal$antlerless[y]*Cage_sus[11,1,5]/sum(Cage_sus[11,1,]))/2 #F,1,2,3,4
-  assumN_sus[y,1,6] <- (Ototal$antlerless[y]*Cage_sus[11,1,5]/sum(Cage_sus[11,1,]))/2 #5
-  assumN_sus[y,1,7] <- (Ototal$antlerless[y]*Cage_sus[11,1,6]/sum(Cage_sus[11,1,]))/3 #6
-  assumN_sus[y,1,8] <- (Ototal$antlerless[y]*Cage_sus[11,1,6]/sum(Cage_sus[11,1,]))/3 #7
-  assumN_sus[y,1,9] <- (Ototal$antlerless[y]*Cage_sus[11,1,6]/sum(Cage_sus[11,1,]))/3 #8
-  assumN_sus[y,1,10] <- Ototal$antlerless[y]*Cage_sus[11,1,7]/sum(Cage_sus[11,1,]) #9+
-
-  for(a in 1:4){
-    assumN_sus[y,2,a] <- Ototal$antlered[y]*Cage_sus[11,1,a]/sum(Cage_sus[11,1,]) #F,1,2,3,
-  }
-  assumN_sus[y,2,5] <- (Ototal$antlered[y]*Cage_sus[11,1,5]/sum(Cage_sus[11,1,]))/2 #4
-  assumN_sus[y,2,6] <- (Ototal$antlered[y]*Cage_sus[11,1,5]/sum(Cage_sus[11,1,]))/2 #5
-  assumN_sus[y,2,7] <-  Ototal$antlered[y]*Cage_sus[11,1,6]/sum(Cage_sus[11,1,])
-}
-
-
-###
 ### For 2002 - 2021, when we have age classification data
 ###
 
-for(y in 11:n_year){
+for(y in 1:n_year){
   for(a in 1:4){
-    assumN_sus[y,1,a] <- Ototal$antlerless[y]*Cage_sus[y - 10,1,a]/sum(Cage_sus[y - 10,1,]) #F,1,2,3,
+    assumN_sus[y,1,a] <- Ototal$antlerless[y]*Cage_sus[y,1,a]/sum(Cage_sus[y,1,]) #F,1,2,3,
   }
-  assumN_sus[y,1,5] <- (Ototal$antlerless[y]*Cage_sus[y - 10,1,5]/sum(Cage_sus[y - 10,1,]))/2 #F,1,2,3,4
-  assumN_sus[y,1,6] <- (Ototal$antlerless[y]*Cage_sus[y - 10,1,5]/sum(Cage_sus[y - 10,1,]))/2 #5
-  assumN_sus[y,1,7] <- (Ototal$antlerless[y]*Cage_sus[y - 10,1,6]/sum(Cage_sus[y - 10,1,]))/3 #6
-  assumN_sus[y,1,8] <- (Ototal$antlerless[y]*Cage_sus[y - 10,1,6]/sum(Cage_sus[y - 10,1,]))/3 #7
-  assumN_sus[y,1,9] <- (Ototal$antlerless[y]*Cage_sus[y - 10,1,6]/sum(Cage_sus[y - 10,1,]))/3 #8
-  assumN_sus[y,1,10] <- Ototal$antlerless[y]*Cage_sus[y - 10,1,7]/sum(Cage_sus[y - 10,1,]) #9+
+  assumN_sus[y,1,5] <- (Ototal$antlerless[y]*Cage_sus[y,1,5]/sum(Cage_sus[y,1,]))/2 #F,1,2,3,4
+  assumN_sus[y,1,6] <- (Ototal$antlerless[y]*Cage_sus[y,1,5]/sum(Cage_sus[y,1,]))/2 #5
+  assumN_sus[y,1,7] <- (Ototal$antlerless[y]*Cage_sus[y,1,6]/sum(Cage_sus[y,1,]))/3 #6
+  assumN_sus[y,1,8] <- (Ototal$antlerless[y]*Cage_sus[y,1,6]/sum(Cage_sus[y,1,]))/3 #7
+  assumN_sus[y,1,9] <- (Ototal$antlerless[y]*Cage_sus[y,1,6]/sum(Cage_sus[y,1,]))/3 #8
+  assumN_sus[y,1,10] <- Ototal$antlerless[y]*Cage_sus[y,1,7]/sum(Cage_sus[y,1,]) #9+
 
   for(a in 1:4){
-    assumN_sus[y,2,a] <- Ototal$antlered[y]*Cage_sus[y - 10,1,a]/sum(Cage_sus[y - 10,1,]) #F,1,2,3,
+    assumN_sus[y,2,a] <- Ototal$antlered[y]*Cage_sus[y,1,a]/sum(Cage_sus[y,1,]) #F,1,2,3,
   }
-  assumN_sus[y,2,5] <- (Ototal$antlered[y]*Cage_sus[y - 10,1,5]/sum(Cage_sus[y - 10,1,]))/2 #4
-  assumN_sus[y,2,6] <- (Ototal$antlered[y]*Cage_sus[y - 10,1,5]/sum(Cage_sus[y - 10,1,]))/2 #5
-  assumN_sus[y,2,7] <-  Ototal$antlered[y]*Cage_sus[y - 10,1,6]/sum(Cage_sus[y - 10,1,])
+  assumN_sus[y,2,5] <- (Ototal$antlered[y]*Cage_sus[y,1,5]/sum(Cage_sus[y,1,]))/2 #4
+  assumN_sus[y,2,6] <- (Ototal$antlered[y]*Cage_sus[y,1,5]/sum(Cage_sus[y,1,]))/2 #5
+  assumN_sus[y,2,7] <-  Ototal$antlered[y]*Cage_sus[y,1,6]/sum(Cage_sus[y,1,])
 }
 pop_sus_init <- assumN_sus
-# pop_sus_init <- abind(assumN_sus,assumN_sus[20,,],along=1)
-
 
 #assumed starting population >>> by sex/age class (needs to be logpop for model)
 assumN_inf <- array(0, dim = c(n_year,n_sex,n_agef))
@@ -98,24 +73,24 @@ assumN_inf <- array(0, dim = c(n_year,n_sex,n_agef))
 #or we could values from lit? estimate these?
 # assumN_inf.f.1 <- c(2229,2008,1115, 651,414,284,212,158,122,393) 
 # assumN_inf.m.1 <- c(2529,2098,1115, 651,414,284,212,158,122,3)
-for(y in 11:n_year){
+for(y in 9:n_year){
   for(a in 1:4){
-    assumN_inf[y,1,a] <- Ototal$antlerless[y]*Cage_inf[y - 10,1,a]/sum(Cage_inf[y - 10,1,]) #F,1,2,3,
+    assumN_inf[y,1,a] <- Ototal$antlerless[y]*Cage_inf[y - 8,1,a]/sum(Cage_inf[y - 8,1,]) #F,1,2,3,
   }
-  assumN_inf[y,1,5] <- (Ototal$antlerless[y]*Cage_inf[y - 10,1,5]/sum(Cage_inf[y - 10,1,]))/2 #F,1,2,3,4
-  assumN_inf[y,1,6] <- (Ototal$antlerless[y]*Cage_inf[y - 10,1,5]/sum(Cage_inf[y - 10,1,]))/2 #5
-  assumN_inf[y,1,7] <- (Ototal$antlerless[y]*Cage_inf[y - 10,1,6]/sum(Cage_inf[y - 10,1,]))/3 #6
-  assumN_inf[y,1,8] <- (Ototal$antlerless[y]*Cage_inf[y - 10,1,6]/sum(Cage_inf[y - 10,1,]))/3 #7
-  assumN_inf[y,1,9] <- (Ototal$antlerless[y]*Cage_inf[y - 10,1,6]/sum(Cage_inf[y - 10,1,]))/3 #8
-  assumN_inf[y,1,10] <- Ototal$antlerless[y]*Cage_inf[y - 10,1,7]/sum(Cage_inf[y - 10,1,]) #9+
+  assumN_inf[y,1,5] <- (Ototal$antlerless[y]*Cage_inf[y - 8,1,5]/sum(Cage_inf[y - 8,1,]))/2 #F,1,2,3,4
+  assumN_inf[y,1,6] <- (Ototal$antlerless[y]*Cage_inf[y - 8,1,5]/sum(Cage_inf[y - 8,1,]))/2 #5
+  assumN_inf[y,1,7] <- (Ototal$antlerless[y]*Cage_inf[y - 8,1,6]/sum(Cage_inf[y - 8,1,]))/3 #6
+  assumN_inf[y,1,8] <- (Ototal$antlerless[y]*Cage_inf[y - 8,1,6]/sum(Cage_inf[y - 8,1,]))/3 #7
+  assumN_inf[y,1,9] <- (Ototal$antlerless[y]*Cage_inf[y - 8,1,6]/sum(Cage_inf[y - 8,1,]))/3 #8
+  assumN_inf[y,1,10] <- Ototal$antlerless[y]*Cage_inf[y - 8,1,7]/sum(Cage_inf[y - 8,1,]) #9+
 
 
   for(a in 1:4){
-    assumN_inf[y,2,a] <- Ototal$antlered[y]*Cage_inf[y - 10,1,a]/sum(Cage_inf[y - 10,1,]) #F,1,2,3,
+    assumN_inf[y,2,a] <- Ototal$antlered[y]*Cage_inf[y - 8,1,a]/sum(Cage_inf[y - 8,1,]) #F,1,2,3,
   }
-  assumN_inf[y,2,5] <- (Ototal$antlered[y]*Cage_inf[y - 10,1,5]/sum(Cage_inf[y - 10,1,]))/2 #4
-  assumN_inf[y,2,6] <- (Ototal$antlered[y]*Cage_inf[y - 10,1,5]/sum(Cage_inf[y - 10,1,]))/2 #5
-  assumN_inf[y,2,7] <-  Ototal$antlered[y]*Cage_inf[y - 10,1,6]/sum(Cage_inf[y - 10,1,])
+  assumN_inf[y,2,5] <- (Ototal$antlered[y]*Cage_inf[y - 8,1,5]/sum(Cage_inf[y - 8,1,]))/2 #4
+  assumN_inf[y,2,6] <- (Ototal$antlered[y]*Cage_inf[y - 8,1,5]/sum(Cage_inf[y - 8,1,]))/2 #5
+  assumN_inf[y,2,7] <-  Ototal$antlered[y]*Cage_inf[y - 8,1,6]/sum(Cage_inf[y - 8,1,])
 }
 pop_inf_init <- assumN_inf
  
@@ -123,14 +98,10 @@ f_logpop_inf <- log(assumN_inf[1,1,])
 f_logpop_sus <- log(assumN_sus[1,1,])
 m_logpop_inf <- log(assumN_inf[1,2,1:n_agem])
 m_logpop_sus <- log(assumN_sus[1,2,1:n_agem])
-
-# logpop_sus <- ifelse(logpop_sus<0,-5,logpop_sus)
 f_logpop_sus <- ifelse(f_logpop_sus<0,-5,f_logpop_sus)
 m_logpop_sus <- ifelse(m_logpop_sus<0,-5,m_logpop_sus)
 f_logpop_inf <- ifelse(f_logpop_inf<0,-5,f_logpop_inf)
 m_logpop_inf <- ifelse(m_logpop_inf<0,-5,m_logpop_inf)
-
-# pop_inf_init <- abind(assumN_inf,assumN_inf[20,,],along=1)
 
 ################################################
 ###
@@ -151,13 +122,12 @@ sizeCage_m <- apply(Cage_ant,1,sum)
 ###
 #############################################
 
-report_overall_init <-rbeta(1,report_hyp_all[1],report_hyp_all[2])
+report_overall_init <- rbeta(1,report_hyp_all[1], report_hyp_all[2])
 
 report_init <- rep(report_overall_init,n_year)
-for(y in 24:29){
-    report_init[y] <- rbeta(1,report_hyp_y$alpha[y-23],report_hyp_y$beta[y-23])
+for(y in 23:28) {
+    report_init[y] <- rbeta(1,report_hyp_y$alpha[y - 22],report_hyp_y$beta[y-22])
 }
-
 #########################################################################
 ###
 ### Fecundity/FDR Preliminaries
@@ -168,11 +138,11 @@ for(y in 24:29){
 ### moment matching functions
 ##########################################
 
-lognormal_moments <- function(barx,s){
-	mu <- log(barx / sqrt((s^2) / (barx^2) + 1))
-	sigma <- sqrt(log((s^2) / (barx^2) + 1))
-	return(list(mu=mu,sigma=sigma))
-}
+# lognormal_moments <- function(barx,s){
+# 	mu <- log(barx / sqrt((s^2) / (barx^2) + 1))
+# 	sigma <- sqrt(log((s^2) / (barx^2) + 1))
+# 	return(list(mu=mu,sigma=sigma))
+# }
 
 gamma_moments <- function(mu,sigma){
 	alpha <- (mu^2)/(sigma^2)
@@ -216,6 +186,8 @@ obs_ct_fd_alpha  <- c(fdr_ct_gam_moments_1992_2016$alpha,fdr_ct_gam_moments_2017
 obs_ct_fd_beta <- c(fdr_ct_gam_moments_1992_2016$beta,fdr_ct_gam_moments_2017_2021$beta)
 
 fec_init <- c(fawndoe_df$overall_fd,df_camtrap_fd$fdr_mean)
+ 
+n_year_fec_early <- nrow(fawndoe_df)
 
 ################################################################################
 ###
@@ -490,7 +462,8 @@ fec_init <- c(fawndoe_df$overall_fd,df_camtrap_fd$fdr_mean)
 ##########################################################################
 # preliminaries for survival model using AAH data
 ###########################################################################
-n_year_precollar <- length(1992:2016)
+# n_year_precollar <- length(1992:2016)
+n_year_precollar <- length(1994:2016)
 n_year_collar <- length(2017:2021)
 
 which(1992:2021 == 2017)
@@ -504,7 +477,7 @@ age_indx_3 <- 4*52
 age_indx_4_5 
 
 
-period_aah_lookup <- matrix(NA,nrow=n_year,ncol=2)
+period_aah_lookup <- matrix(NA, nrow = n_year, ncol = 2)
 #may-sep2022, non-harvest period
 
 ##########################################################################
