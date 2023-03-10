@@ -2926,7 +2926,12 @@ calc_surv_harvest <- nimble::nimbleFunction(
         intvl_step_yr = double(0),
         n_year = double(0),
         n_agef = double(0),
-        n_agem = double(0)
+        n_agem = double(0),
+        pre_hunt_end = double(1),
+        ng_start = double(1),
+        gun_start = double(1),
+        gun_end = double(1),
+        ng_end = double(1)
         ) {
 
     ###################################################################
@@ -2948,111 +2953,86 @@ calc_surv_harvest <- nimble::nimbleFunction(
             # S0[2, i, j] <- exp(-sum(UCH[2,1:i,1:j]))
         }
     }
+    UCH_hunt[1:2,1:nT_age,1:nT_period] <- UCH[1:2,1:nT_age,1:nT_period]
+
+    for(i in 1:n_year){
+        for(j in ng_start[i]:(gun_start[i]-1)){
+            UCH_hunt[1,1:nT_age,j] <- UCH[1,1:nT_age,j] * p_nogun_f
+            UCH_hunt[2,1:nT_age,j] <- UCH[2,1:nT_age,j] * p_nogun_m
+        }
+        for(j in gun_start[i]:(gun_end[i]-1)){
+            UCH_hunt[1,1:nT_age,j] <- UCH[1,1:nT_age,j] * p_gun_f
+            UCH_hunt[2,1:nT_age,j] <- UCH[2,1:nT_age,j] * p_gun_m
+        }
+        for(j in (gun_end[i] + 1):(ng_end[i])){
+            UCH_hunt[1,1:nT_age,j] <- UCH[1,1:nT_age,j] * p_nogun_f
+            UCH_hunt[2,1:nT_age,j] <- UCH[2,1:nT_age,j] * p_nogun_m
+        }
+    }
 
 
-ng_end = d_fit_season$ng_end
-yr_start = d_fit_season$yr_start
-nt  <- ng_end - yr_start + 1
-nT <- max(nt) 
-
-#first year antlerless fawns, uninfected
-# lam_sus[sex,age,period]
-# for(i in 1:n_year){
-#     # UCH[1,1:nt[i],yr_start[i]:ng_end[i]]
-#     lam_sus[i,1,1:nt[i]] <- diag(UCH[1,1:nt[i],yr_start[i]:ng_end[i]])
-# }
-# lam_sus[i,1,1:nt[i]] <- diag(UCH[1,1:nt[i],yr_start[i]:ng_end[i]])
-
-# lam_sus <- nimArray(0,dim=c(2,n_agef,nT))
-# for(i in 1:n_year){
-#     for(a in 1:n_agef){
-#         lam_sus[1,a,1:nt[i]] <- diag(UCH[1, 52*(a-1) + (1:nt[i]), yr_start[i]:ng_end[i]])
-#     }
-#     for(a in 1:n_agem){
-#         lam_sus[2,a,1:nt[i]] <- diag(UCH[1, 52*(a-1) + (1:nt[i]), yr_start[i]:ng_end[i]])
-#     }
-
-#     exp(-sum(lam_sus[1,a,1:nt[i]]))
-
-# }
-# lam_sus[1,,]
-
-names(d_fit_season)
-#indexing
-pre_hunt_end = d_fit_season$pre_hunt_end
-yr_start = d_fit_season$yr_start
-pre_hunt_end = d_fit_season$pre_hunt_end
-ng_start = d_fit_season$ng_start
-gun_start = d_fit_season$gun_start
-gun_end = d_fit_season$gun_end
-ng_end = d_fit_season$ng_end
-post_hunt_start = d_fit_season$post_hunt_start
-yr_end = d_fit_season$yr_end
-
-
-# Sh[sex,age(years),year]
-Sh <- array(NA,c(2,n_agef,n_year))
-### female antlerless fawns
-for(i in 1:n_year){
-    Sh[1,1,i] <- exp(-sum(UCH[1,1:length(yr_start[i]:pre_hunt_end[i]),yr_start[i]:pre_hunt_end[i]]))*
-        ((1 - exp(-sum(UCH[1,1:length(ng_start[i]:gun_start[i]),ng_start[i]:gun_start[i]])))*p_nogun[1] +
-        exp(-sum(UCH[1,1:length(ng_start[i]:gun_start[i]),ng_start[i]:gun_start[i]]))*
-        (1 - exp(-sum(UCH[1,1:length(gun_end[i]:ng_end[i]),gun_end[i]:ng_end[i]])))*p_gun[1] + 
-        exp(-sum(UCH[1,1:length(ng_start[i]:gun_end[i]),ng_start[i]:gun_end[i]]))*
-        (1 - exp(-sum(UCH[1,1:length(gun_end[i]:ng_end[i]),gun_end[i]:ng_end[i]])))*p_nogun[1])    
-}
-
-### antlerless females all ages aside from fawns
-for(i in 1:n_year){
-    for(a in 2:n_agef){
-        Sh[1,a,i] <- exp(-sum(UCH[1,(a-1)*52+(1:length(yr_start[i]:pre_hunt_end[i])),yr_start[i]:pre_hunt_end[i]]))*
-            ((1 - exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_start[i])),ng_start[i]:gun_start[i]])))*p_nogun[1] +
-            exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_start[i])),ng_start[i]:gun_start[i]]))*
-            (1 - exp(-sum(UCH[1,(a-1)*52+(1:length(gun_end[i]:ng_end[i])),gun_end[i]:ng_end[i]])))*p_gun[1] + 
-            exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_end[i])),ng_start[i]:gun_end[i]]))*
-            (1 - exp(-sum(UCH[1,(a-1)*52+(1:length(gun_end[i]:ng_end[i])),gun_end[i]:ng_end[i]])))*p_nogun[1])
-    }    
-}
-#but don't we need to condition on surviving to the birth pulse from the previous age?
-
-
-
-
-age_indx_fh <- c()
-for(a in 2:n_agef){
-    age_indx_fh <- c(age_indx_fh,(a-1)*52)
-}
-
-age_indx_fh[a - 1]
+    for(i in 1:nT_age) {
+        for(j in 1:nT_period) {
+            S0[1, i, j] <- exp(-sum(UCH[1,1:i,1:j]))
+            S0[2, i, j] <- exp(-sum(UCH[2,1:i,1:j]))
+            S0_hunt[1, i, j] <- exp(-sum(UCH_hunt[1,1:i,1:j]))
+            S0_hunt[2, i, j] <- exp(-sum(UCH_hunt[2,1:i,1:j]))
+        }
+    }
 
     # fawns across all years
     # s_aah[sex, age(years), period(years)]
     for (t in 1:n_year) {
-        s_aah[1, 1, t] <- S0[1, yr_end_indx[t], intvl_step_yr] #antlerless fawns
-        s_aah[2, 1, t] <- S0[2, yr_end_indx[t], intvl_step_yr] #antlered fawns
+        s_hunt[1, 1, t] <- S0_hunt[1, ng_end[t], intvl_step_yr] #antlerless fawns
+        s_hunt[2, 1, t] <- S0_hunt[2, ng_end[t], intvl_step_yr] #antlered fawns
     }
     # first year across all ages from sex-specific process model
     # antlerless yearlings and older first year
     for(a in 2:n_agef) {
-    s_aah[1, a, 1] <- S0[1, yr_end_indx[1], a * intvl_step_yr]
+        s_hunt[1, a, 1] <- S0_hunt[1, ng_end[1], a * intvl_step_yr]
     }
     #antlered yearlings and older first year
     for(a in 2:n_agem) {
-    s_aah[1, a, 1] <- S0[1, yr_end_indx[1], a * intvl_step_yr]
+        s_hunt[1, a, 1] <- S0_end[1, ng_end[1], a * intvl_step_yr]
     }
 
     #first year all ages from process model
     for (t in 2:n_years) {
-    for (a in 2:n_agef) {
-        s_aah[1, a, t] <- S0[1, a * intvl_step_yr, yr_end_indx[t]]/
-                            S0[1, (a - 1) * intvl_step_yr, yr_end_indx[t - 1]]
-    }
-    for(a in 2:n_agem) {
-        s_aah[2, a, t] <- S0[2, a * intvl_step_yr, yr_end_indx[t]]/
-                            S0[2, (a - 1)* intvl_step_yr, yr_end_indx[t - 1]]
-    }
+        for (a in 2:n_agef) {
+            s_hunt[1, a, t] <- S0_hunt[1, a * intvl_step_yr, ng_end[t]]/
+                                S0[1, (a - 1) * intvl_step_yr, yr_end_indx[t - 1]]
+        }
+        for(a in 2:n_agem) {
+            s_hunt[2, a, t] <- S0[2, a * intvl_step_yr, ng_end[t]]/
+                                S0[2, (a - 1)* intvl_step_yr, yr_end_indx[t - 1]]
+        }
     }
 
+
+# # Sh[sex,age(years),year]
+# Sh <- array(NA,c(2,n_agef,n_year))
+# ### female antlerless fawns
+# for(i in 1:n_year){
+#     Sh[1,1,i] <- exp(-sum(UCH[1,1:length(yr_start[i]:pre_hunt_end[i]),yr_start[i]:pre_hunt_end[i]]))*
+#         ((1 - exp(-sum(UCH[1,1:length(ng_start[i]:gun_start[i]),ng_start[i]:gun_start[i]])))*p_nogun[1] +
+#         exp(-sum(UCH[1,1:length(ng_start[i]:gun_start[i]),ng_start[i]:gun_start[i]]))*
+#         (1 - exp(-sum(UCH[1,1:length(gun_end[i]:ng_end[i]),gun_end[i]:ng_end[i]])))*p_gun[1] + 
+#         exp(-sum(UCH[1,1:length(ng_start[i]:gun_end[i]),ng_start[i]:gun_end[i]]))*
+#         (1 - exp(-sum(UCH[1,1:length(gun_end[i]:ng_end[i]),gun_end[i]:ng_end[i]])))*p_nogun[1])    
+# }
+
+# ### antlerless females all ages aside from fawns
+# for(i in 1:n_year){
+#     for(a in 2:n_agef){
+#         Sh[1,a,i] <- exp(-sum(UCH[1,(a-1)*52+(1:length(yr_start[i]:pre_hunt_end[i])),yr_start[i]:pre_hunt_end[i]]))*
+#             ((1 - exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_start[i])),ng_start[i]:gun_start[i]])))*p_nogun[1] +
+#             exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_start[i])),ng_start[i]:gun_start[i]]))*
+#             (1 - exp(-sum(UCH[1,(a-1)*52+(1:length(gun_end[i]:ng_end[i])),gun_end[i]:ng_end[i]])))*p_gun[1] + 
+#             exp(-sum(UCH[1,(a-1)*52+(1:length(ng_start[i]:gun_end[i])),ng_start[i]:gun_end[i]]))*
+#             (1 - exp(-sum(UCH[1,(a-1)*52+(1:length(gun_end[i]:ng_end[i])),gun_end[i]:ng_end[i]])))*p_nogun[1])
+#     }    
+# }
+
   returnType(double(3))
-  return(s_aah[1:2,1:n_agef,1:n_year])
+  return(s_hunt[1:2,1:n_agef,1:n_year])
 })
