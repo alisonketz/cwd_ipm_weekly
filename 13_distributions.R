@@ -19,6 +19,185 @@
 # d_fit_idead
 # d_fit_endlive
 # d_aah
+#######################################################################
+###
+###   Likelihoods for each kind of data listed below
+###
+#######################################################################
+
+# d_fit_hunt_neg
+# d_fit_hunt_pos
+# d_fit_sus_cens_posttest
+# d_fit_sus_cens_postno
+# d_fit_sus_mort_posttest
+# d_fit_sus_mort_postno 
+# d_fit_icap_cens
+# d_fit_icap_mort
+# d_fit_rec_neg_mort
+# d_fit_rec_neg_cens
+# d_fit_rec_pos_mort
+# d_fit_rec_pos_cens
+# d_fit_idead
+# d_fit_endlive
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected harvest deer
+###
+###   d_fit_hunt_pos
+###   Overleaf Equation 3
+###
+#######################################################################
+
+
+# dInfHarvest <- nimble::nimbleFunction(
+#     run = function(
+#         ### argument type declarations
+#         x = integer(0),
+#         a = integer(0), #age (weeks) at harvest
+#         sex = integer(0),
+#         age2date = integer(0),
+#         beta_sex = double(0),
+#         beta0_sus = double(0),
+#         beta0_inf = double(0),
+#         age_effect_surv = double(1),
+#         period_effect_surv = double(1),
+#         f_age_foi = double(1),
+#         m_age_foi = double(1),
+#         age_lookup_f = double(1),
+#         age_lookup_m = double(1),
+#         period_lookup = double(1),
+#         f_period_foi = double(1),
+#         m_period_foi = double(1),
+#         space = double(0),
+#         log = double(0)
+#         ) {
+
+#     lam_foi <- nimNumeric(a)
+#     lam_sus <- nimNumeric(a - 1)
+#     lam_inf <- nimNumeric(a)
+#     lik_temp <- nimNumeric(a)
+#     indx_foi_age_f <- nimNumeric(a)
+#     indx_foi_age_m <- nimNumeric(a)
+#     indx_foi_period <- nimNumeric(a)
+    
+#     #############################################
+#     # preliminary hazards for the likelihood
+#     #############################################
+#     indx_foi_age_f[1:a] <- age_lookup_f[1:a]
+#     indx_foi_age_m[1:a] <- age_lookup_m[1:a]
+#     indx_foi_period[1:a] <- period_lookup[(1 + age2date):(a + age2date)]
+
+#     lam_foi[1:a] <- exp(rep(space, a) +
+#                         sex * (f_age_foi[indx_foi_age_f[1:a]] + 
+#                                f_period_foi[indx_foi_period[1:a]])+
+#                         (1 - sex) * (m_age_foi[indx_foi_age_m[1:a]] + 
+#                                      m_period_foi[indx_foi_period[1:a]])
+#                     )
+#     lam_sus[1:(a - 1)] <- exp(rep(beta0_sus, (a - 1)) +
+#                             age_effect_surv[1:(a - 1)] +
+#                             period_effect_surv[(1 + age2date):(a - 1 + age2date)] +
+#                             rep(beta_sex * sex, (a - 1))
+#                            )
+#     lam_inf[1:a] <- exp(rep(beta0_inf, a) +
+#                         age_effect_surv[1:a] +
+#                         period_effect_surv[(1 + age2date):(a + age2date)] +
+#                         rep(beta_sex * sex, a)
+#                         )
+
+#     #######################################
+#     ### calculating the joint likelihood
+#     #######################################
+
+#     lik_temp[1] <- lam_foi[1] * exp(-sum(lam_inf[1:(a - 1)]))
+
+#     for (k in 2:(a - 1)) {
+#         lik_temp[k] <- lam_foi[k] *
+#                exp(-sum(lam_sus[1:(k - 1)] + lam_foi[1:(k - 1)])) *
+#                exp(-sum(lam_inf[k:(a - 1)]))
+#     }
+#     lik_temp[a] <- lam_foi[a] * exp(-sum(lam_foi[1:(a - 1)] +
+#                                          lam_sus[1:(a - 1)]))
+#     lik <- lam_inf[a] * sum(lik_temp[1:a])
+#     llik <- log(lik)
+#     returnType(double(0))
+#     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
+#   })
+
+
+# nimble::registerDistributions(list(
+#     dInfHarvest = list(
+#         BUGSdist = 'dInfHarvest(a,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+#         types = c("a = integer(0)",
+#                     "sex = integer(0)",
+#                     "age2date = integer(0)",
+#                     "beta_sex = double(0)",
+#                     "beta0_sus = double(0)",
+#                     "beta0_inf = double(0)",
+#                     "age_effect_surv = double(1)",
+#                     "period_effect_surv = double(1)",
+#                     "f_age_foi = double(1)",
+#                     "m_age_foi = double(1)",
+#                     "age_lookup_f = double(1)",
+#                     "age_lookup_m = double(1)",
+#                     "period_lookup = double(1)",
+#                     "f_period_foi = double(1)",
+#                     "m_period_foi = double(1)",
+#                     "space = double(0)",
+#                     "log = double(0)"
+#                   ),
+#         discrete = TRUE
+#     )
+# ))
+
+# # for a user-defined distribution
+# assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
+
+# dInfHarvest(
+#         x = 1,
+#         a = d_fit_hunt_pos$ageweeks[1], #age (weeks) at harvest
+#         sex = d_fit_hunt_pos$sex[1],
+#         age2date = d_fit_hunt_pos$birthweek[1]-1,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_f,
+#         age_lookup_m = age_lookup_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = space_mn[1],
+#         log = TRUE
+#         )
+
+# test=c()
+#   for (i in 1:nrow(d_fit_hunt_pos)) {
+#     test[i] <- dInfHarvest(x = 1,
+#                   a = d_fit_hunt_pos$ageweeks[i], #age (weeks) at harvest
+#                   sex = d_fit_hunt_pos$sex[i],
+#                   age2date = d_fit_hunt_pos$birthweek[i],
+#                   beta_sex = beta_sex,
+#                   beta0_sus = beta0_sus,
+#                   beta0_inf = beta0_inf,
+#                   age_effect_surv = age_effect_survival_test,
+#                   period_effect_surv = period_effect_survival_test,
+#                   f_age_foi = f_age_foi,
+#                   m_age_foi = m_age_foi,
+#                   age_lookup_f = age_lookup_f,
+#                   age_lookup_m = age_lookup_m,
+#                   period_lookup = period_lookup,
+#                   f_period_foi = f_period_foi,
+#                   m_period_foi = m_period_foi,
+#                   space = 0,
+#                   log = TRUE
+#                   )
+#   }
+# which(is.na(test))
 
 #######################################################################
 ###
@@ -144,31 +323,31 @@ nimble::registerDistributions(list(
 # for a user-defined distribution
 assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 
-start <- Sys.time()
-test <- dInfHarvest(
-        x = rep(1,nrow(d_fit_hunt_pos)),
-		  n_samples = nrow(d_fit_hunt_pos),
-        a = d_fit_hunt_pos$ageweeks, #age (weeks) at harvest
-        sex = d_fit_hunt_pos$sex,
-        age2date = d_fit_hunt_pos$birthweek-1,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_f,
-        age_lookup_m = age_lookup_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = rep(0,nrow(d_fit_hunt_pos)),
-        sect = d_fit_hunt_pos$sect,
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test
+# start <- Sys.time()
+# test <- dInfHarvest(
+#         x = rep(1,nrow(d_fit_hunt_pos)),
+# 		  n_samples = nrow(d_fit_hunt_pos),
+#         a = d_fit_hunt_pos$ageweeks, #age (weeks) at harvest
+#         sex = d_fit_hunt_pos$sex,
+#         age2date = d_fit_hunt_pos$birthweek-1,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_f,
+#         age_lookup_m = age_lookup_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = rep(0,nrow(d_fit_hunt_pos)),
+#         sect = d_fit_hunt_pos$sect,
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test
 
 
 
@@ -738,59 +917,59 @@ nimble::registerDistributions(list(
 ###for a user-defined distribution
 assign('dSusCensNo', dSusCensNo, envir = .GlobalEnv)
 
-start <- Sys.time()
-test <- dSusCensNo(
-        x = rep(1,nrow(d_fit_sus_cens_postno)),
-		  n_samples = nrow(d_fit_sus_cens_postno),
-        e = d_fit_sus_cens_postno$left_age_e,
-        r = d_fit_sus_cens_postno$right_age_r,
-        sex = d_fit_sus_cens_postno$sex,
-        age2date = sus_cens_postno_age2date,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = rep(0,n_sect),
-		  sect = d_fit_sus_cens_postno$sect,
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test
+# start <- Sys.time()
+# test <- dSusCensNo(
+#         x = rep(1,nrow(d_fit_sus_cens_postno)),
+# 		  n_samples = nrow(d_fit_sus_cens_postno),
+#         e = d_fit_sus_cens_postno$left_age_e,
+#         r = d_fit_sus_cens_postno$right_age_r,
+#         sex = d_fit_sus_cens_postno$sex,
+#         age2date = sus_cens_postno_age2date,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = rep(0,n_sect),
+# 		  sect = d_fit_sus_cens_postno$sect,
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test
 
-start <- Sys.time()
-test2 <- dSusCensNo(
-        x = rep(1,nrow(d_fit_endlive)),
-		  n_samples = nrow(d_fit_endlive),
-        e = d_fit_endlive$left_age_e,
-        r = d_fit_endlive$right_age_r,
-        sex = d_fit_endlive$sex,
-        age2date = endlive_age2date,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = rep(0,n_sect),
-		  sect = d_fit_endlive$sect,
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test2
+# start <- Sys.time()
+# test2 <- dSusCensNo(
+#         x = rep(1,nrow(d_fit_endlive)),
+# 		  n_samples = nrow(d_fit_endlive),
+#         e = d_fit_endlive$left_age_e,
+#         r = d_fit_endlive$right_age_r,
+#         sex = d_fit_endlive$sex,
+#         age2date = endlive_age2date,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = rep(0,n_sect),
+# 		  sect = d_fit_endlive$sect,
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test2
 
 #######################################################################
 ###
@@ -2503,35 +2682,35 @@ nimble::registerDistributions(list(
 ### for a user-defined distribution
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 
-start <- Sys.time()
-test <-  dNegCapPosMort(
-        x = 1,
-		  n_samples = nrow(d_fit_idead),
-        e = d_fit_idead$left_age_e,
-        r = d_fit_idead$right_age_r,
-        s = d_fit_idead$right_age_s,
-        dn1 = d_fit_idead$left_age_e,
-        dn = d_fit_idead$right_age_s,
-        sex = d_fit_idead$sex,
-        age2date = idead_age2date,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-		  sect = d_fit_idead$sect,
-        space = rep(0,n_sect),
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test
+# start <- Sys.time()
+# test <-  dNegCapPosMort(
+#         x = 1,
+# 		  n_samples = nrow(d_fit_idead),
+#         e = d_fit_idead$left_age_e,
+#         r = d_fit_idead$right_age_r,
+#         s = d_fit_idead$right_age_s,
+#         dn1 = d_fit_idead$left_age_e,
+#         dn = d_fit_idead$right_age_s,
+#         sex = d_fit_idead$sex,
+#         age2date = idead_age2date,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+# 		  sect = d_fit_idead$sect,
+#         space = rep(0,n_sect),
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test
 
 
 
