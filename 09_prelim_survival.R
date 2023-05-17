@@ -1,43 +1,50 @@
+
+###
+### calibrating collar study time with start of harvest study time
+### for indexing
+### in the likelihood
+###
+# min(d_fit_hunt_neg$kill_date)
+# min(d_fit_hunt_pos$kill_date)
+# nT_overall <- floor(as.duration(ymd("2002-03-01") %--% ymd("2022-05-08"))/dweeks(1)) - 1
+# nT_period_presurv <- floor(as.duration(ymd("2002-03-01") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+# floor(as.duration(ymd("2017-01-07") %--% ymd("2022-05-08"))/dweeks(1))
+
+#if we go from the first birth in 1992
+nT_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
+nT_period_presurv <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+
 ###
 ### calibrating age of deer with the study time for indexing
 ### in the likelihood
 ###
 
 #left_period - left_age
-sus_age2date <- d_fit_sus$left_period_e - d_fit_sus$left_age_e 
-icap_cens_age2date <- d_fit_icap_cens$left_period_e - d_fit_icap_cens$left_age_e 
-icap_mort_age2date <- d_fit_icap_mort$left_period_e - d_fit_icap_mort$left_age_e 
-idead_age2date <- d_fit_idead$left_period_e - d_fit_idead$left_age_e 
-rec_neg_cens_posttest_age2date <- d_fit_rec_neg_cens_posttest$left_period_e - d_fit_rec_neg_cens_posttest$left_age_e 
-rec_neg_cens_postno_age2date <- d_fit_rec_neg_cens_postno$left_period_e - d_fit_rec_neg_cens_postno$left_age_e 
-rec_neg_mort_age2date <- d_fit_rec_neg_mort$left_period_e - d_fit_rec_neg_mort$left_age_e 
-rec_pos_cens_age2date <- d_fit_rec_pos_cens$left_period_e - d_fit_rec_pos_cens$left_age_e 
-rec_pos_mort_age2date <- d_fit_rec_pos_mort$left_period_e - d_fit_rec_pos_mort$left_age_e 
-sus_cens_postno_age2date <- d_fit_sus_cens_postno$left_period_e - d_fit_sus_cens_postno$left_age_e 
-sus_cens_posttest_age2date <- d_fit_sus_cens_posttest$left_period_e - d_fit_sus_cens_posttest$left_age_e 
-sus_mort_posttest_age2date <- d_fit_sus_mort_posttest$left_period_e - d_fit_sus_mort_posttest$left_age_e 
-sus_mort_postno_age2date <- d_fit_sus_mort_postno$left_period_e - d_fit_sus_mort_postno$left_age_e 
-endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e 
+sus_age2date <- d_fit_sus$left_period_e - d_fit_sus$left_age_e + nT_period_presurv
+icap_cens_age2date <- d_fit_icap_cens$left_period_e - d_fit_icap_cens$left_age_e + nT_period_presurv
+icap_mort_age2date <- d_fit_icap_mort$left_period_e - d_fit_icap_mort$left_age_e + nT_period_presurv
+idead_age2date <- d_fit_idead$left_period_e - d_fit_idead$left_age_e + nT_period_presurv
+rec_neg_cens_posttest_age2date <- d_fit_rec_neg_cens_posttest$left_period_e - d_fit_rec_neg_cens_posttest$left_age_e + nT_period_presurv
+rec_neg_cens_postno_age2date <- d_fit_rec_neg_cens_postno$left_period_e - d_fit_rec_neg_cens_postno$left_age_e + nT_period_presurv
+rec_neg_mort_age2date <- d_fit_rec_neg_mort$left_period_e - d_fit_rec_neg_mort$left_age_e + nT_period_presurv
+rec_pos_cens_age2date <- d_fit_rec_pos_cens$left_period_e - d_fit_rec_pos_cens$left_age_e + nT_period_presurv
+rec_pos_mort_age2date <- d_fit_rec_pos_mort$left_period_e - d_fit_rec_pos_mort$left_age_e + nT_period_presurv
+sus_cens_postno_age2date <- d_fit_sus_cens_postno$left_period_e - d_fit_sus_cens_postno$left_age_e + nT_period_presurv
+sus_cens_posttest_age2date <- d_fit_sus_cens_posttest$left_period_e - d_fit_sus_cens_posttest$left_age_e + nT_period_presurv
+sus_mort_posttest_age2date <- d_fit_sus_mort_posttest$left_period_e - d_fit_sus_mort_posttest$left_age_e + nT_period_presurv
+sus_mort_postno_age2date <- d_fit_sus_mort_postno$left_period_e - d_fit_sus_mort_postno$left_age_e + nT_period_presurv
+endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e + nT_period_presurv
+
 
 ###
 ### Number of age effects and number of period effects
 ###
 
 nT_age_surv <- max(d_surv$right_age_s, na.rm = TRUE) - 1
-nT_age_surv_m <- max(d_surv$right_age_smonth, na.rm = TRUE) - 1
+# nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE) - 1
+# nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE)
 
-# nT_period_collar <- max(d_surv$right_period_s, na.rm = TRUE) - 1
-# nT_period_collar <- max(d_surv$right_period_s, na.rm = TRUE)
-
-nT_period_collar <- nT_period_overall - nT_period_precollar
-nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
-
-
-###
-### The number of integrals within a year, for weekly or monthly
-###
-intvl_step_yr <- 52
-# intvl_step_yr <- 12
+nT_period_surv <- nT_overall - nT_period_presurv
 
 
 ###############################
@@ -48,15 +55,12 @@ intvl_step_yr <- 52
 ###############################
 
 quant_age <- .05
-knots_age <- unique(c(1,round(quantile(d_surv$right_age_r,
-                                      c(seq(quant_age, .99, by=quant_age),
-                                      .99)))))
+knots_age <- unique(c(1,round(quantile(d_fit_sus$right_age_r,c(seq(quant_age,.99, by=quant_age),.99)))))
 nknots_age <- length(knots_age)
 splinebasis <- ns(1:nT_age_surv, knots = knots_age)#,intercept=TRUE,
 constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 qrc <- qr(t(constr_sumzero))
-Z <- qr.Q(qrc,
-          complete = TRUE)[, (nrow(constr_sumzero) + 1):ncol(constr_sumzero)]
+Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
 Z_age <- splinebasis%*%Z
 nknots_age <- dim(Z_age)[2]
 
@@ -80,25 +84,23 @@ nknots_age <- dim(Z_age)[2]
 ##########################################
 
 intvl_period <- 13
-knots_period <- c(1,seq(intvl_period, nT_period_collar, by = intvl_period))
+knots_period <- c(1,seq(intvl_period, nT_period_surv, by = intvl_period))
 knots_period <- unique(knots_period)
 nknots_period <- length(knots_period)
-splinebasis <- bs(1:nT_period_collar, knots = knots_period)
-# constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
-# qrc <- qr(t(constr_sumzero))
-# Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
-# Z_period <- splinebasis%*%Z
-# Z_period <- splinebasis
+splinebasis <- bs(1:nT_period_surv, knots = knots_period)
+constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
+qrc <- qr(t(constr_sumzero))
+Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
+Z_period <- splinebasis%*%Z
 nknots_period <- dim(Z_period)[2]
 
+
 # pdf("figures/basis_function_time_bs.pdf")
-# plot(1:nT_period_collar,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
+# plot(1:nT_period_surv,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
 # for(i in 2:nknots_period){
-#   lines(1:nT_period_collar,Z_period[,i])
+#   lines(1:nT_period_surv,Z_period[,i])
 # }
 # dev.off()
-
-
 
 ###############################
 ###
@@ -152,10 +154,10 @@ nknots_period <- dim(Z_period)[2]
 ##########################################
 
 # inf_intvl_period <- 13
-# inf_knots_period <- c(1,seq(inf_intvl_period, inf_nT_period_collar, by = inf_intvl_period))
+# inf_knots_period <- c(1,seq(inf_intvl_period, inf_nT_period_surv, by = inf_intvl_period))
 # inf_knots_period <- unique(inf_knots_period)
 # inf_nknots_period <- length(inf_knots_period)
-# splinebasis <- bs(1:inf_nT_period_collar, knots = inf_knots_period)
+# splinebasis <- bs(1:inf_nT_period_surv, knots = inf_knots_period)
 # constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 # qrc <- qr(t(constr_sumzero))
 # Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
@@ -163,10 +165,10 @@ nknots_period <- dim(Z_period)[2]
 # inf_nknots_period <- dim(inf_Z_period)[2]
 # inf_nknots_period
 # inf_intvl_period <- 13
-# inf_knots_period <- c(1,seq(inf_intvl_period, nT_period_collar, by = inf_intvl_period))
+# inf_knots_period <- c(1,seq(inf_intvl_period, nT_period_surv, by = inf_intvl_period))
 # inf_knots_period <- unique(inf_knots_period)
 # inf_nknots_period <- length(inf_knots_period)
-# splinebasis <- bs(1:nT_period_collar, knots = inf_knots_period)
+# splinebasis <- bs(1:nT_period_surv, knots = inf_knots_period)
 # constr_sumzero <- matrix(1, 1, nrow(splinebasis)) %*% splinebasis
 # qrc <- qr(t(constr_sumzero))
 # Z <- qr.Q(qrc,complete=TRUE)[,(nrow(constr_sumzero)+1):ncol(constr_sumzero)]
@@ -176,9 +178,9 @@ nknots_period <- dim(Z_period)[2]
 
 
 # pdf("figures/basis_function_time_bs.pdf")
-# plot(1:nT_period_collar,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
+# plot(1:nT_period_surv,Z_period[,1],type="l",ylim=c(-1,1),main="Basis Function Time Effect")
 # for(i in 2:nknots_period){
-#   lines(1:nT_period_collar,Z_period[,i])
+#   lines(1:nT_period_surv,Z_period[,i])
 # }
 # dev.off()
 

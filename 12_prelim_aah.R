@@ -39,7 +39,7 @@ n_sex <- 2
 #assumed starting population >>> by sex/age class (needs to be logpop for model)
 assumN_sus <- array(0, dim = c(n_year,n_sex,n_agef))
 
-#or we could values from lit? estimate these?
+# or we could values from lit? estimate these?
 # assumN_sus.f.1 <- c(2229,2008,1115, 651,414,284,212,158,122,393) 
 # assumN_sus.m.1 <- c(2529,2098,1115, 651,414,284,212,158,122,3)
 
