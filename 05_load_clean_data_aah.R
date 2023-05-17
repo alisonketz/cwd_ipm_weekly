@@ -45,6 +45,43 @@ head(df_harv)
 
 
 ###################################################################################################################################
+#Loading and cleaning early Age Composition data (no cwd test), prior to start of study
+###################################################################################################################################
+
+df_age_before_male <-  read.csv(paste0(filepath,"age_composition_1983_1991_male.csv"))
+df_age_before_male$U <- NULL
+head(df_age_before_male)
+df_age_before_male <- df_age_before_male %>% group_by(YR) %>% 
+    summarise(across(everything(), sum, na.rm = TRUE),
+                .groups = 'drop')  %>%
+    as.data.frame()
+df_age_before_female <-  read.csv(paste0(filepath,"age_composition_1983_1991_female.csv"))
+df_age_before_female$U <- NULL
+df_age_before_female <- df_age_before_female %>% group_by(YR) %>% 
+    summarise(across(everything(), sum,na.rm = TRUE),
+                .groups = 'drop')  %>%
+    as.data.frame()
+
+
+df_age_before_female <- df_age_before_female %>% pivot_longer(!YR, names_to = "age", values_to = "count")
+df_age_before_male <- df_age_before_male %>% pivot_longer(!YR, names_to = "age", values_to = "count")
+df_age_before_female$age <- df_age_before_female$age %>% recode("A0" = 1,"A2" = 2, "A3" = 3, "A4" = 4,"A6" = 6, "A9" = 9, "ADD" = 0)
+df_age_before_male$age <- df_age_before_male$age %>% recode("ADB" = 0,"LS0" = 1, "RB0" = 1, "RB2" = 2,"RB3" = 3,"SB0" = 1)
+df_age_before_male  <- suppressWarnings(df_age_before_male %>% group_by(YR,age) %>% dplyr::summarize(count=sum(count)))
+df_age_before_male$sex <- "Male"
+df_age_before_female$sex <- "Female"
+df_age_before <- rbind(df_age_before_female,df_age_before_male)
+
+names(df_age_before) <- c("year", "age", "n", "sex")
+df_age_before <- arrange(df_age_before,year,sex,age)
+df_age_before <- df_age_before %>% group_by(age) %>% summarise(total=sum(n))
+df_age_before$prop <- df_age_before$total/sum(df_age_before$total)
+
+
+
+
+
+###################################################################################################################################
 #Loading and cleaning early Age Composition data (no cwd test)
 ###################################################################################################################################
 

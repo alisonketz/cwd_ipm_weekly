@@ -783,7 +783,7 @@ for (i in 1:nAAH) {
   tau_pop ~ dgamma(1,1)
   # tau_pop_sus ~ dgamma(1,1)
   # tau_pop_inf ~ dgamma(1,1)
-
+  
   for (a in 1:n_agef) {
     #Initial population structure pop[year=1,sex=i,age=a] for susceptible deer
     llpop_sus[1,1,a]~dnorm(f_logpop_sus[a], tau_pop)
@@ -796,12 +796,12 @@ for (i in 1:nAAH) {
 
   for (a in 1:n_agem) {    
     #Initial population structure pop[year=1,sex=i,age=a] for susceptible deer
-    llpop_sus[1,2,a]~dnorm(m_logpop_sus[a], tau_pop)
-    pop_sus[1,2,a] <- exp(llpop_sus[1, 2, a])
+    llpop_sus[2,1,a]~dnorm(m_logpop_sus[a], tau_pop)
+    pop_sus[2,1,a] <- exp(llpop_sus[2, 1, a])
 
     #Initial population structure pop[year=1,sex=i,age=a]
-    llpop_inf[1,2,a]~dnorm(m_logpop_inf[a], tau_pop)
-    pop_inf[1,2,a] <- exp(llpop_inf[1, 2, a])
+    llpop_inf[2,1,a]~dnorm(m_logpop_inf[a], tau_pop)
+    pop_inf[2,1,a] <- exp(llpop_inf[2, 1, a])
   }
 
   ############################

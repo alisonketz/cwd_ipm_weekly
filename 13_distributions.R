@@ -3072,7 +3072,6 @@ calc_surv_aah <- nimble::nimbleFunction(
   return(s_aah[1:2,1:n_agef,1:n_year])
 })
 
-
 #######################################################################
 ###
 ### Function to calculate annual survival based on age effects and 
