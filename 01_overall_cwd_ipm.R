@@ -55,7 +55,6 @@ source("summarize.R")
 source("02_load_clean_data_foi.R")
 source("03_load_clean_data_survival.R")
 
-
 ###############################################################
 ### Load/clean Spatially referenced data
 ###############################################################

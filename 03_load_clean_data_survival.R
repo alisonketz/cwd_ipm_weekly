@@ -337,8 +337,10 @@ indx_impute <- which(d_cap$ageatcap == "" | d_cap$ageatcap=="NOAGE")
 indx_impute_male <-indx_impute[which(d_cap$sex[indx_impute]=="Male")]
 indx_impute_female <-indx_impute[which(d_cap$sex[indx_impute]=="Female")]
 
+set.seed(1944)
 d_cap$ageatcap[indx_impute_female] <- nimble::rcat(length(indx_impute_female),prob=prob_age_female)+1.5
 d_cap$ageatcap[indx_impute_male] <- nimble::rcat(length(indx_impute_male),prob=prob_age_male)+1.5
+set.seed(1946)
 
 #converting age at capture to numeric
 d_cap$ageatcap <- as.numeric(d_cap$ageatcap)
@@ -565,17 +567,16 @@ d_mort$mortalertdate <- as.Date(d_mort$mortalertdate, format = "%Y-%m-%d")
 d_mort$collarfound <- as.Date(d_mort$collarfound, format = "%Y-%m-%d")
 d_cens$censordate <- as.Date(d_cens$censordate , format = "%Y-%m-%d")
 
-#which should these be censored and which should be morts?
-# d_mort[d_mort$lowtag %in% d_cens$lowtag,]
-low_cens_inmort <- d_cens$lowtag[d_cens$lowtag %in% d_mort$lowtag ]
+# which should these be censored and which should be morts?
+low_cens_inmort <- d_cens$lowtag[d_cens$lowtag %in% d_mort$lowtag]
 
 mortdate <- list()
-for(i in 1:nrow(d_mort)){
+for(i in 1:nrow(d_mort)) {
   mortdate[[i]] <- c(d_mort$estmortdate[i],
       d_mort$mortalertdate[i],
       d_mort$collarfound[i])}
-temp<- lapply(mortdate, min, na.rm=TRUE)
-d_mort$mortdate <- Reduce(c,temp)
+temp <- lapply(mortdate, min, na.rm=TRUE)
+d_mort$mortdate <- Reduce(c, temp)
 
 #checking that the deer that are in both the censor and mortality 
 # sheets have the censor date before the mortality date
@@ -672,13 +673,13 @@ levels(d_mort$cause1) <- c("anthro",# accident
                            "disease", #enterocolitis
                            "anthro",#eutenasia
                            "anthro",#euthanasia
-                           "disease",#"gastroenteritis"  
+                           "disease",#"gastroenteritis"
                            "anthro",#"haybine"
                            "hunt",#hunter harvest"
-                           "disease",#"infection"        
+                           "disease",#"infection"
                            "anthro",# injury
                            "pneumonia",# pneumonia
-                           "anthro",#poaching         
+                           "anthro",#poaching
                            "predation", #predation
                            "starvation",#starvation
                            "anthro",# "vehicle collision"
