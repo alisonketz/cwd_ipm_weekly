@@ -872,7 +872,7 @@ for (i in 1:nAAH) {
   #### Hunting Survival Susceptibles
   ###################################################
 
-  sh_sus[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+  sh_sus[1:2,1:n_agef,1:n_year] <- calc_surv_harvest(nT_age = nT_age,
           nT_period = nT_period_overall,
           beta0 = beta0_sus,
           beta_sex = beta_sex,
@@ -894,7 +894,7 @@ for (i in 1:nAAH) {
   #### Hunting Survival Infected
   ###################################################
 
-  sh_inf[1:2,1:n_agef,1:n_year] <- calc_surv_aah(nT_age = nT_age,
+  sh_inf[1:2,1:n_agef,1:n_year] <- calc_surv_harvest(nT_age = nT_age,
           nT_period = nT_period_overall,
           beta0 = beta0_inf,
           beta_sex = beta_sex,
