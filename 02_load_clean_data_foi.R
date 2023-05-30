@@ -54,39 +54,35 @@ source("cleanData_foi.R")
 
 cwd_df <- cleanData(cwd_df)
 
-# ###
-# ### Restricing to the core area - should change to our study area eventually
-# ###
-
-# core.df <- sf::st_read("~/Documents/Data/Core_Area/core_sections.shp")
-# names(core.df)
-# # core.df = read.dbf("~/Documents/Data/Study_Area/study_sections.dbf")
-# # names(core.df) = tolower(names(core.df))
-# core.df$trs = paste0(core.df$twp, "-", core.df$rng, "-", core.df$sec)
-
-# #creating unique section id's for all sections in the study area
-# cwd_df$sectionid <- do.call(paste, c(cwd_df[c("range", "town", "sect")], sep = "-"))
-
-# cwd_df <- cwd_df[cwd_df$trs %in% core.df$trs,]
-# dim(cwd_df)
-# cwd_df <- cwd_df[cwd_df$sectionid %in% core.df$sectionid,]
-# dim(cwd_df)
-
 #######################################
 ###
 ### Restricing to the study area
 ###
 #######################################
 
-study_df <- sf::st_read("~/Documents/Data/Study_Area/secrdtrs_selection.shp")
+study_df <- sf::st_read("~/Documents/Data/Study_Area/study_df.shp")
 
 #creating sections that account for range_direction first
 study_df$dsection <- paste0(study_df$dir,"-",study_df$sectionid)
 cwd_df$dsection <- do.call(paste, c(cwd_df[c("range_dir","range", "town", "sect")], sep = "-"))
+
 cwd_df <- cwd_df[cwd_df$dsection %in% study_df$dsection, ]
+
 cwd_df$year <- lubridate::year(cwd_df$kill_date)
+
 #setting all deer killed in January 2022 to be part of study year 2021
 cwd_df$year[cwd_df$year==2022] <- 2021
+
+#setting up east/west study areas
+cwd_df$ew <- rep(NA,nrow(cwd_df))
+for(i in 1:nrow(study_df)){
+        j <- which(cwd_df$dsection %in% study_df$dsection[i])
+            cwd_df$ew[j] <- study_df$ew[i]
+        }
+#table(cwd_df$ew)
+# head(cwd_df$ew)
+cwd_df$ew <- as.numeric(as.factor(cwd_df$ew))#east ==1, west == 2
+
 
 ######################################################
 # Aggregate Oldest Age Class of Males
